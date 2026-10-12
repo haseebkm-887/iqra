@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure student messaging portal.">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/supabase.js"></script>
+  <title>Messages | IQRA’ Portal</title>
+  <style>
+    body {
+      background: radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 28rem), var(--color-bg);
+    }
+
+    .field {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--color-bg) 78%, var(--color-surface));
+      color: var(--color-text);
+      padding: .75rem .9rem;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .field::placeholder {
+      color: var(--color-muted);
+    }
+
+    .field:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+    }
+
+    .message-shell {
+      min-height: calc(100vh - 73px);
+    }
+
+    .message-board {
+      height: min(720px, calc(100vh - 170px));
+      min-height: 500px;
+    }
+
+    #inbox,
+    #chat {
+      min-height: 0;
+    }
+
+    #conversationList {
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    @media (max-width: 767px) {
+      .message-board {
+        height: calc(100vh - 145px);
+        min-height: 520px;
+      }
+    }
+
+    .conversation.active {
+      background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+      border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+    }
+
+    .conversation:hover {
+      background: color-mix(in srgb, var(--color-primary) 9%, transparent);
+    }
+
+    .bubble {
+      max-width: min(78%, 520px);
+    }
+
+    .bubble.mine {
+      background: var(--color-primary);
+      color: var(--color-primary-contrast);
+      border-bottom-right-radius: 5px;
+    }
+
+    .bubble.theirs {
+      background: color-mix(in srgb, var(--color-surface) 92%, var(--color-text));
+      border-bottom-left-radius: 5px;
+    }
+
+    .bubble video,
+    .bubble img {
+      display: block;
+      width: min(100%, 320px);
+      max-width: 100%;
+      max-height: 220px;
+      margin-inline: auto;
+      object-fit: contain;
+      border-radius: calc(var(--radius) * .7);
+      background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+    }
+
+    .bubble video {
+      display: block;
+      width: min(100%, 320px);
+      height: auto;
+      aspect-ratio: 16 / 9;
+      max-height: 220px;
+      min-height: 160px;
+      object-fit: contain;
+      contain: layout paint size;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+    .bubble video:fullscreen {
+      width: 100%;
+      height: 100%;
+      max-height: none;
+      aspect-ratio: auto;
+      background: #000;
+    }
+
+    .chat-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-primary) transparent;
+    }
+
+    .online-dot {
+      box-shadow: 0 0 0 3px var(--color-surface);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: .55rem;
+      height: .55rem;
+      flex: 0 0 .55rem;
+      border-radius: 999px;
+      transition: background-color .25s ease, box-shadow .25s ease;
+    }
+
+    .status-dot-online {
+      background: var(--color-online);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-online) 18%, transparent);
+      animation: statusPulse 1.8s ease-in-out infinite;
+    }
+
+    .status-dot-offline {
+      background: var(--color-offline);
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-online) 15%, transparent); }
+      50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-online) 4%, transparent); }
+    }
+
+    .presence-online::after {
+      content: '';
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 12px;
+      height: 12px;
+      border: 3px solid var(--color-surface);
+      border-radius: 999px;
+      background: var(--color-online);
+    }
+
+    .modal-backdrop {
+      background: color-mix(in srgb, var(--color-bg) 76%, transparent);
+      backdrop-filter: blur(12px);
+    }
+
+    .file-chip {
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
+
+    .typing span {
+      animation: blink 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: .2s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: .4s;
+    }
+
+    @keyframes blink {
+
+      0%,
+      60%,
+      100% {
+        opacity: .25;
+        transform: translateY(0);
+      }
+
+      30% {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .inbox.mobile-hidden {
+        display: none;
+      }
+
+      .chat.mobile-hidden {
+        display: none;
+      }
+
+      .bubble {
+        max-width: 88%;
+      }
+    }
+
+  </style>
+</head>
+
+<body class="min-h-screen text-[var(--color-text)]">
+  <header class="border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[var(--color-surface)]/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <a href="/" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-logo-stroke)] bg-[var(--color-logo-bg)] font-heading text-xl font-bold text-[var(--color-logo-contrast)]" aria-hidden="true">I</span>
+        <span><strong class="font-heading">IQRA’ Portal</strong><span class="block text-xs text-[var(--color-muted)]">Secure messages</span></span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-3 py-2" aria-label="Toggle theme">◐</button>
+        <a href="/" class="hidden rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold sm:block">Back to portal</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="loginView" class="grid min-h-[calc(100vh-73px)] place-items-center px-5 py-10">
+    <section class="glass w-full max-w-md rounded-[calc(var(--radius)*1.5)] p-7 shadow-2xl sm:p-10">
+      <div class="mb-8 grid h-14 w-14 place-items-center rounded-2xl bg-[var(--color-primary)] text-2xl text-[var(--color-primary-contrast)]">✉</div>
+      <p class="text-sm font-bold uppercase tracking-[.2em] text-[var(--color-primary)]">Student communication</p>
+      <h1 class="mt-3 font-heading text-4xl font-bold">Your messages.</h1>
+      <p class="mt-3 text-[var(--color-muted)]">Students enter their Student ID to open messages. Administrators use their portal username and password.</p>
+      <form id="loginForm" class="mt-7 space-y-4">
+        <label class="block text-sm font-semibold">Student ID or admin username<input id="loginId" class="field mt-2" type="text" required placeholder="Student ID or admin username"></label>
+        <label id="passwordLabel" class="block text-sm font-semibold">Password<input id="loginPassword" class="field mt-2" type="password" placeholder="Required for administrators"></label>
+        <p id="loginError" class="min-h-5 text-sm text-red-400"></p>
+        <button class="w-full rounded-[var(--radius)] bg-[var(--color-primary)] py-3.5 font-bold text-[var(--color-primary-contrast)] transition hover:brightness-110">Open inbox</button>
+      </form>
+      <p class="mt-6 text-center text-xs text-[var(--color-muted)]">Students can message the admin and any other student by Student ID.</p>
+    </section>
+  </main>
+
+  <main id="appView" class="message-shell mx-auto hidden max-w-[1500px] px-4 py-4 sm:px-8 sm:py-5">
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p id="roleEyebrow" class="text-sm font-bold uppercase tracking-[.2em] text-[var(--color-primary)]">Messages</p>
+        <h1 id="pageTitle" class="mt-2 font-heading text-3xl font-bold sm:text-4xl">Inbox</h1>
+      </div>
+      <div class="flex items-center gap-3"><span id="identity" class="text-sm text-[var(--color-muted)]"></span><button id="logout" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold">Sign out</button></div>
+    </div>
+    <section class="message-board glass grid overflow-hidden rounded-[calc(var(--radius)*1.25)] shadow-2xl md:grid-cols-[250px_1fr]">
+      <aside id="inbox" class="inbox flex min-h-0 flex-col border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] md:border-b-0 md:border-r">
+        <div class="border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] p-4">
+          <div class="relative"><span class="absolute left-3 top-2.5 text-[var(--color-muted)]">⌕</span><input id="search" class="field w-full max-w-[170px] py-2 pl-9" placeholder="Search conversations"></div>
+          <div class="mt-3 flex gap-2">
+            <form id="studentContactForm" class="flex min-w-0 flex-1 gap-2">
+              <input id="studentContactId" class="field min-w-0 py-2" inputmode="numeric" pattern="[0-9]+" placeholder="Any student ID">
+              <button class="shrink-0 rounded-[var(--radius)] bg-[var(--color-primary)] px-3 py-2 text-sm font-bold text-[var(--color-primary-contrast)]" type="submit">Chat</button>
+            </form>
+            <button id="newGroupButton" type="button" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-3 py-2 text-sm font-bold" title="Create group">＋</button>
+          </div>
+          <p id="contactError" class="mt-2 hidden text-xs text-red-400"></p>
+        </div>
+        <div id="conversationList" class="chat-scroll min-h-0 flex-1 space-y-1 overflow-y-auto p-3"></div>
+      </aside>
+      <section id="chat" class="chat flex min-w-0 flex-col">
+        <div id="emptyChat" class="grid flex-1 place-items-center p-8 text-center">
+          <div>
+            <div class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-[var(--color-primary)]/15 text-3xl text-[var(--color-primary)]">💬</div>
+            <h2 class="mt-5 font-heading text-2xl font-bold">Select a conversation</h2>
+            <p class="mt-2 text-[var(--color-muted)]">Choose a contact to start messaging.</p>
+          </div>
+        </div>
+        <div id="activeChat" class="hidden min-h-0 flex-1 flex-col">
+          <header class="flex items-center gap-3 border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] p-4"><button id="backToInbox" class="rounded-lg p-2 md:hidden">←</button>
+            <div id="contactAvatar" class="relative grid h-11 w-11 place-items-center rounded-xl bg-[var(--color-primary)] font-bold text-[var(--color-primary-contrast)]"></div>
+            <div class="min-w-0 flex-1">
+              <h2 id="contactName" class="truncate font-heading font-bold"></h2>
+              <p id="contactStatus" class="flex items-center gap-2 text-xs text-[var(--color-muted)]"></p>
+            </div><div class="relative flex items-center gap-1"><button id="chatSearchButton" class="rounded-lg p-2 text-[var(--color-muted)]" title="Search messages">⌕</button><button id="chatSettingsButton" class="rounded-lg p-2 text-[var(--color-muted)] transition hover:bg-[var(--color-primary)]/10 hover:text-[var(--color-primary)]" title="Chat settings" aria-label="Chat settings" aria-expanded="false">⚙</button><div id="chatSettingsMenu" class="absolute right-0 top-12 z-20 hidden min-w-48 rounded-xl border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] bg-[var(--color-surface)] p-2 shadow-2xl"><button id="clearChatButton" type="button" class="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold transition hover:bg-[var(--color-primary)]/10">Clear chat</button><button id="deleteConversationButton" type="button" class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-red-400 transition hover:bg-red-500/10">Delete conversation</button></div></div>
+          </header>
+          <div id="messageList" class="chat-scroll max-h-[360px] flex-1 space-y-3 overflow-y-auto p-4 sm:p-5"></div>
+          <div id="typingIndicator" class="hidden px-5 pb-2 text-xs text-[var(--color-muted)]"><span class="typing">Typing <span>•</span><span>•</span><span>•</span></span></div>
+          <form id="composer" class="border-t border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] p-3 sm:p-4">
+            <div id="attachmentPreview" class="mb-2 hidden"></div>
+            <div class="flex items-end gap-2"><button id="emojiButton" type="button" class="rounded-xl p-3 text-xl text-[var(--color-muted)]" title="Add emoji">☺</button><button id="voiceButton" type="button" class="rounded-xl p-3 text-lg text-[var(--color-muted)] hover:text-[var(--color-primary)]" title="Record voice message" aria-label="Record voice message">🎙️</button><label class="rounded-xl p-3 text-lg text-[var(--color-muted)] hover:text-[var(--color-primary)]" title="Attach image, video, or MP3 audio">📎<input id="fileInput" class="hidden" type="file" accept="image/*,video/mp4,video/webm,.mp4,.webm,.mov,.ogg,audio/mpeg,audio/mp3,audio/*,.mp3,.wav,.m4a,.aac,.flac"></label><textarea id="messageInput" class="field max-h-32 min-h-12 flex-1 resize-none py-3" rows="1" maxlength="2000" placeholder="Write a message..."></textarea><button class="grid h-12 w-12 place-items-center rounded-xl bg-[var(--color-primary)] text-lg text-[var(--color-primary-contrast)]" title="Send message">➤</button></div><p id="voiceStatus" class="mt-2 hidden text-xs text-[var(--color-primary)]"></p>
+            <div id="emojiPanel" class="mt-2 hidden rounded-xl bg-[var(--color-primary)]/10 p-3 text-xl"><button type="button">😀</button><button type="button">👍</button><button type="button">❤️</button><button type="button">🎉</button><button type="button">🙏</button><button type="button">📚</button><button type="button">✅</button></div>
+          </form>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden rounded-xl bg-[var(--color-surface)] px-5 py-4 text-sm shadow-2xl"></div>
+  <div id="messageNotification" class="message-notification fixed right-5 top-20 z-50 hidden w-[min(calc(100vw-2rem),380px)] rounded-2xl border border-[color-mix(in_srgb,var(--color-primary)_35%,transparent)] bg-[var(--color-surface)] p-4 shadow-2xl" role="status" aria-live="polite">
+    <div class="flex items-start gap-3">
+      <div class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[var(--color-primary)] text-lg text-[var(--color-primary-contrast)]">✉</div>
+      <div class="min-w-0 flex-1">
+        <p class="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">New message</p>
+        <p id="messageNotificationText" class="mt-1 text-sm leading-6"></p>
+        <button id="openMessageNotification" type="button" class="mt-3 rounded-lg bg-[var(--color-primary)] px-3 py-2 text-xs font-bold text-[var(--color-primary-contrast)]">Open conversation</button>
+      </div>
+      <button id="closeMessageNotification" type="button" class="rounded-lg px-2 py-1 text-lg text-[var(--color-muted)]" aria-label="Dismiss notification">×</button>
+    </div>
+  </div>
+  <script>
+    (() => {
+      'use strict';
+      const STUDENTS = 'iqraPortalData2026';
+      const MESSAGES = 'iqraPortalMessages2026';
+      const GROUPS = 'iqraPortalChatGroups2026';
+      const PINS = 'iqraPortalChatPins2026';
+      const SESSION = 'iqraMessageSession2026';
+      const contacts = {
+        admin: {
+          id: 'admin',
+          name: 'Portal Admin',
+          initials: 'AD',
+          role: 'Administration',
+          online: true
+        },
+      };
+      const teacherAccounts = [
+        {
+          username: 'jashireee07@gmail.com',
+          password: 'jashireee07'
+        },
+        {
+          username: 'jashreee07@gamil.com',
+          password: 'jashireee07'
+        }
+      ];
+              let students = [],
+        messages = [],
+        presence = {},
+        session = null,
+        activeId = null,
+        lastKnownMessageIds = new Set(),
+        pendingNotificationContactId = '',
+        notificationTimer = null,
+        selectedFile = null,
+        voiceRecorder = null,
+        voiceChunks = [],
+        voiceData = '',
+        voiceEncoding = false,
+        groups = [],
+        pins = {};
+
+      const isStaff = () => session?.role === 'admin' || session?.role === 'teacher';
+
+      const localPresence = () => read('iqraPortalPresence2026', {});
+      const presenceRecord = userId => {
+        const key = String(userId);
+        const cloud = presence[key] || {};
+        const local = localPresence()[key] || {};
+        return {
+          ...cloud,
+          ...local,
+          is_online: local.isOnline ?? cloud.is_online ?? false,
+          show_online_status: local.showOnlineStatus ?? cloud.show_online_status ?? true,
+          last_seen: local.lastSeen || cloud.last_seen || ''
+        };
+      };
+      const presenceVisible = userId => presenceRecord(userId).show_online_status !== false;
+      const presenceIsOnline = userId => {
+        const item = presenceRecord(userId);
+        if (!presenceVisible(userId)) return false;
+        const lastSeen = item.lastSeen || item.last_seen;
+        const timestamp = typeof lastSeen === 'number' ? lastSeen : new Date(lastSeen || 0).getTime();
+        const active = item.isOnline === true || item.is_online === true;
+        return active && timestamp > Date.now() - 6000;
+      };
+
+      const lastSeenLabel = userId => {
+        if (!presenceVisible(userId)) return 'Offline';
+        if (presenceIsOnline(userId)) return 'Online';
+        const item = presenceRecord(userId);
+        const rawTime = item.lastSeen || item.last_seen;
+        const lastSeen = typeof rawTime === 'number' ? rawTime : new Date(rawTime || 0).getTime();
+        if (!lastSeen) return 'Offline';
+        const seconds = Math.max(0, Math.floor((Date.now() - lastSeen) / 1000));
+        if (seconds < 60) return 'Last seen recently';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `Last seen ${minutes}m ago`;
+        return `Last seen ${new Date(lastSeen).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+      };
+
+      const presenceLabel = userId => presenceIsOnline(userId) ? 'Online' : lastSeenLabel(userId);
+      const statusMarkup = userId => {
+        const online = presenceIsOnline(userId);
+        return `<span class="status-dot ${online ? 'status-dot-online' : 'status-dot-offline'}" aria-hidden="true"></span><span>${esc(presenceLabel(userId))}</span>`;
+      };
+
+      async function updatePresence() {
+        if (!session) return;
+        const userId = session.role === 'admin' ? `admin:${session.username || 'portal'}` : session.role === 'teacher' ? `teacher:${session.username}` : `student:${session.studentId}`;
+        const student = currentStudent();
+        try {
+          await window.iqraSupabase?.saveChatPresence({
+            userId,
+            studentId: session.role === 'student' ? session.studentId : '',
+            displayName: session.role === 'student' ? student?.name : session.role === 'teacher' ? 'Class Teacher' : session.username || 'Portal Admin',
+            role: session.role,
+            isOnline: document.visibilityState === 'visible',
+            showOnlineStatus: currentStudent()?.show_online_status !== false
+          });
+          const rows = await window.iqraSupabase?.getChatPresence();
+          if (Array.isArray(rows)) {
+            presence = Object.fromEntries(rows.map(row => [String(row.user_id), row]));
+            Object.values(presence).forEach(row => {
+              if (row.is_online && new Date(row.last_seen).getTime() < Date.now() - 5000) row.is_online = false;
+            });
+            renderConversations();
+            if (activeId) {
+              const activeContact = contactFor(activeId);
+              if (activeContact) {
+                $('contactStatus').innerHTML = activeContact.presenceUserId ? statusMarkup(activeContact.presenceUserId) : `<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>${esc(activeContact.statusText || `${activeContact.role} · Offline`)}</span>`;
+              }
+            }
+          }
+        } catch {
+          /* Local chat remains usable when the chat tables are not configured. */
+        }
+      }
+
+      async function syncCloudMessages() {
+        try {
+          // Students receive the full message feed so shared photo/video posts
+          // can be displayed in every student's chat view.
+          const cloudIdentity = session.role === 'admin' ? 'admin' : '';
+          const rows = await window.iqraSupabase?.getChatMessages(cloudIdentity);
+          if (!Array.isArray(rows)) return;
+          const cloudMessages = rows.map(row => ({
+            id: String(row.id),
+            studentId: String(row.student_id),
+            from: String(row.sender_id),
+            to: String(row.recipient_id),
+            text: row.message || '',
+            fileName: row.attachment_name || '',
+            fileType: row.attachment_type || '',
+            fileUrl: row.attachment_url || '',
+            voiceUrl: String(row.attachment_name || '').startsWith('voice-') ? row.attachment_url || '' : '',
+            createdAt: row.created_at,
+            seen: Boolean(row.seen_at)
+          }));
+          const localOnly = messages.filter(localMessage => {
+            if (String(localMessage.studentId || '').startsWith('group:')) return true;
+            const localId = String(localMessage.id);
+            return !cloudMessages.some(cloudMessage => String(cloudMessage.id) === localId);
+          });
+          const nextMessages = [...cloudMessages, ...localOnly].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+          const previousMessageIds = new Set(messages.map(message => String(message.id)));
+          const messagesChanged = JSON.stringify(messages) !== JSON.stringify(nextMessages);
+          const incomingMessage = nextMessages.find(message => !previousMessageIds.has(String(message.id)) && String(message.to) === (isStaff() ? (session.role === 'teacher' ? 'teacher' : 'admin') : String(session.studentId)));
+          messages = nextMessages;
+          save();
+          if (incomingMessage) showMessageNotification(incomingMessage);
+          if (messagesChanged) {
+            renderConversations();
+            const isVideoPlaying = [...document.querySelectorAll('#messageList video')].some(video => !video.paused && !video.ended);
+            if (activeId && !isVideoPlaying) renderMessages();
+          }
+        } catch {
+          /* Keep the local cache available if the backend is unavailable. */
+        }
+      }
+      const $ = id => document.getElementById(id);
+      const read = (key, fallback) => {
+        try {
+          const value = JSON.parse(localStorage.getItem(key));
+          return value ?? fallback;
+        } catch {
+          return fallback;
+        }
+      };
+      const save = () => localStorage.setItem(MESSAGES, JSON.stringify(messages));
+      const saveGroups = () => localStorage.setItem(GROUPS, JSON.stringify(groups));
+      const savePins = () => localStorage.setItem(PINS, JSON.stringify(pins));
+      const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      })[c]);
+      const notify = text => {
+        $('toast').textContent = text;
+        $('toast').classList.remove('hidden');
+        clearTimeout(window.chatToast);
+        window.chatToast = setTimeout(() => $('toast').classList.add('hidden'), 2600);
+      };
+
+      function showMessageNotification(message) {
+        if (!session || !message) return;
+        const senderId = String(message.from || '');
+        const contact = contactFor(senderId);
+        if (!contact || senderId === String(session.studentId) || senderId === 'admin' && isStaff()) return;
+        pendingNotificationContactId = senderId;
+        $('messageNotificationText').textContent = `${contact.name} sent you a new message.`;
+        $('messageNotification').classList.remove('hidden');
+        clearTimeout(notificationTimer);
+        notificationTimer = setTimeout(() => $('messageNotification').classList.add('hidden'), 7000);
+      }
+
+      function closeMessageNotification() {
+        $('messageNotification').classList.add('hidden');
+        clearTimeout(notificationTimer);
+      }
+      const currentStudent = () => students.find(s => String(s.id) === String(session?.studentId));
+      const isSharedMedia = message => {
+        if (message?.voiceUrl) return false;
+        const url = String(message?.fileUrl || '');
+        const name = String(message?.fileName || '');
+        return /^data:(image|video|audio)\//i.test(url) || /\.(png|jpe?g|gif|webp|svg|heic|avif|mp4|webm|ogg|mov|m4v|avi|mp3|wav|m4a|aac|flac)(?:[?#].*)?$/i.test(name);
+      };
+
+      const conversationMessages = id => messages.filter(m => {
+        if (!session) return false;
+        const group = groups.find(item => String(item.id) === String(id));
+        if (group) return group.members.includes(String(m.from)) || group.members.includes(String(m.to)) || String(m.studentId) === String(group.id);
+        if (isStaff()) {
+          const staffId = session.role === 'teacher' ? 'teacher' : 'admin';
+          return String(m.studentId) === String(id) && (String(m.from) === staffId || String(m.to) === staffId);
+        }
+        const me = String(session.studentId);
+        const contact = String(id);
+        const sender = String(m.from);
+        const recipient = String(m.to);
+        const isMyMessage = sender === me;
+        const isMessageFromContact = sender === contact && recipient === me;
+        const isMessageToContact = isMyMessage && recipient === contact;
+        return isMessageFromContact || isMessageToContact;
+      });
+      const canDeleteMessage = message => {
+        if (!message || !session) return false;
+        if (isStaff()) return true;
+        return String(message.from) === String(session.studentId)
+          && String(message.studentId) === String(session.studentId);
+      };
+      const contactFor = id => {
+        if (contacts[id]) return contacts[id];
+        const group = groups.find(item => String(item.id) === String(id));
+        if (group) return group;
+        const student = students.find(item => String(item.id) === String(id));
+        if (!student) return null;
+        const studentId = String(student.id);
+        return {
+          id: studentId,
+          name: student.name,
+          initials: String(student.name).slice(0, 2).toUpperCase(),
+          role: 'Student',
+          online: Boolean(presenceIsOnline(`student:${studentId}`)),
+          statusText: presenceLabel(`student:${studentId}`),
+          presenceUserId: `student:${studentId}`
+        };
+      };
+      const time = value => new Date(value).toLocaleTimeString([], {
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+      const dateLabel = value => new Date(value).toLocaleDateString([], {
+        month: 'short',
+        day: 'numeric'
+      });
+      const validPassword = (student, password) => !student.password ? password === '123' : String(student.password) === hash(student.id + password);
+      const attachmentMarkup = message => {
+        if (message.voiceUrl) {
+          return `<audio class="mt-2 w-full max-w-xs" controls preload="metadata" src="${esc(message.voiceUrl)}"></audio>`;
+        }
+        if (!message.fileName && !message.fileUrl) return '';
+        const url = String(message.fileUrl || '').trim();
+        const name = esc(message.fileName || 'Attachment');
+        const imageFile = /\.(png|jpe?g|gif|webp|svg|heic|avif)(?:[?#].*)?$/i.test(message.fileName || '');
+        const videoFile = /\.(mp4|webm|ogg|mov|m4v|avi)(?:[?#].*)?$/i.test(message.fileName || '') || /^video\//i.test(message.fileType || '');
+        const audioFile = /\.(mp3|wav|m4a|aac|flac|ogg)(?:[?#].*)?$/i.test(message.fileName || '') || /^audio\//i.test(message.fileType || '');
+        const imageData = /^data:image\//i.test(url);
+        const videoData = /^data:video\//i.test(url);
+        const audioData = /^data:audio\//i.test(url);
+        const usableUrl = /^(?:https?:\/\/|blob:|data:)/i.test(url);
+        if (usableUrl && (imageFile || imageData)) {
+          return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer" class="mt-2 block"><img src="${esc(url)}" alt="${name}" class="max-h-64 max-w-full rounded-xl object-contain"></a>`;
+        }
+        if (usableUrl && (videoFile || videoData)) {
+          return `<video class="chat-attachment-video mt-2" controls preload="metadata" playsinline><source src="${esc(url)}"></video>`;
+        }
+        if (usableUrl && (audioFile || audioData)) {
+          return `<audio class="mt-2 w-full max-w-xs" controls preload="metadata" src="${esc(url)}"></audio>`;
+        }
+        return `<div class="file-chip mt-2 rounded-lg px-3 py-2 text-xs">📎 ${name}</div>`;
+      };
+      const adminHash = value => hash(String(value) + 'iqradmin');
+      const adminAccounts = () => {
+        const fallback = [{
+          username: 'admin@.iqra',
+          password: adminHash('admin@.iqra')
+        }];
+        try {
+          const saved = JSON.parse(localStorage.getItem('iqraPortalAdmins2026'));
+          return Array.isArray(saved) && saved.length ? saved : fallback;
+        } catch {
+          return fallback;
+        }
+      };
+
+      function validAdmin(username, password) {
+        const normalized = String(username).trim().toLowerCase();
+        if (teacherAccounts.some(account => account.username.toLowerCase() === normalized)) return null;
+        const account = adminAccounts().find(item => String(item.username).toLowerCase() === normalized);
+        if (account && String(account.password) === hash(String(account.username) + password)) return account;
+        if (normalized === 'admin@.iqra' && password === 'iqradmin') return {
+          username: 'admin@.iqra'
+        };
+        return null;
+      }
+
+      function validTeacher(username, password) {
+        const normalized = String(username).trim().toLowerCase();
+        return teacherAccounts.find(account => account.username === normalized && account.password === password) || null;
+      }
+
+      function hash(value) {
+        let h = 2166136261;
+        for (const c of String(value)) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+        return String(h >>> 0);
+      }
+
+      function showContactError(text) {
+        $('contactError').textContent = text;
+        $('contactError').classList.toggle('hidden', !text);
+      }
+
+      function openStudentChat(event) {
+        event.preventDefault();
+        const id = $('studentContactId').value.trim();
+        const student = students.find(item => String(item.id) === id);
+        if (!id || !student) {
+          showContactError('No student was found with that Student ID.');
+          return;
+        }
+        if (session.role === 'student' && String(student.id) === String(session.studentId)) {
+          showContactError('You cannot start a chat with yourself.');
+          return;
+        }
+        showContactError('');
+        $('studentContactForm').reset();
+        openChat(String(student.id));
+      }
+
+      function login(event) {
+        event.preventDefault();
+        const id = $('loginId').value.trim();
+        const password = $('loginPassword').value;
+        const teacher = validTeacher(id, password);
+        if (teacher) {
+          session = {
+            role: 'teacher',
+            username: teacher.username
+          };
+          localStorage.setItem(SESSION, JSON.stringify(session));
+          showApp();
+          notify('Class teacher inbox opened');
+          return;
+        }
+        const admin = validAdmin(id, password);
+        if (admin) {
+          session = {
+            role: 'admin',
+            username: admin.username
+          };
+          localStorage.setItem(SESSION, JSON.stringify(session));
+          showApp();
+          notify('Admin inbox opened');
+          return;
+        }
+        const student = students.find(s => String(s.id) === id);
+        if (!student) {
+          $('loginError').textContent = 'No student was found with that Student ID.';
+          return;
+        }
+        session = {
+          role: 'student',
+          studentId: String(student.id)
+        };
+        localStorage.setItem(SESSION, JSON.stringify(session));
+        showApp();
+      }
+
+      function showApp() {
+        $('loginView').classList.add('hidden');
+        $('appView').classList.remove('hidden');
+        $('roleEyebrow').textContent = session.role === 'admin' ? 'Admin inbox' : session.role === 'teacher' ? 'Class teacher inbox' : 'Student communication';
+        $('pageTitle').textContent = isStaff() ? 'Student conversations' : 'Your inbox';
+        $('identity').textContent = session.role === 'admin' ? 'Administrator' : session.role === 'teacher' ? 'Class Teacher' : `${currentStudent()?.name || ''} · ID #${session.studentId}`;
+        renderConversations();
+        if (session.role === 'student') openChat('admin');
+      }
+
+      function togglePin(id) {
+        const key = String(id);
+        pins[key] = !pins[key];
+        savePins();
+        renderConversations();
+      }
+
+      function createGroup() {
+        if (!session) return;
+        const name = prompt('Group name:');
+        if (!name || !name.trim()) return;
+        const ids = prompt('Student IDs separated by commas:', session.role === 'student' ? String(session.studentId) : '')
+          ?.split(',')
+          .map(id => id.trim())
+          .filter(id => students.some(student => String(student.id) === id));
+        if (!ids?.length) return notify('Add at least one valid Student ID');
+        const memberIds = [...new Set([...ids, ...(session.role === 'student' ? [String(session.studentId)] : [])])];
+        const group = {
+          id: `group:${Date.now()}`,
+          name: name.trim().slice(0, 60),
+          members: memberIds,
+          initials: name.trim().slice(0, 2).toUpperCase(),
+          role: `${memberIds.length} members`,
+          online: false
+        };
+        groups.push(group);
+        saveGroups();
+        renderConversations();
+        openChat(group.id);
+        notify('Group chat created');
+      }
+
+      function renderConversations() {
+        const query = $('search').value.toLowerCase();
+        let         list = isStaff() ? students.filter(student => messages.some(message => String(message.studentId) === String(student.id) && (String(message.from) === (session.role === 'teacher' ? 'teacher' : 'admin') || String(message.to) === (session.role === 'teacher' ? 'teacher' : 'admin')))).map(student => ({
+          ...student,
+          id: String(student.id),
+          initials: String(student.name || '?').slice(0, 2).toUpperCase(),
+          role: `Student ID #${student.id}`,
+          online: presenceIsOnline(`student:${student.id}`),
+          statusText: presenceLabel(`student:${student.id}`),
+          presenceUserId: `student:${student.id}`
+        })) : [...Object.values(contacts), ...students.filter(student => String(student.id) !== String(session.studentId)).map(student => ({
+          id: String(student.id),
+          name: student.name,
+          initials: String(student.name || '?').slice(0, 2).toUpperCase(),
+          role: `Student ID #${student.id}`,
+          online: presenceIsOnline(`student:${student.id}`),
+          statusText: presenceLabel(`student:${student.id}`),
+          presenceUserId: `student:${student.id}`
+        }))];
+        if (!isStaff()) list = [...groups.filter(group => group.members.includes(String(session.studentId))), ...list];
+        list = list.filter(c => String(c.name).toLowerCase().includes(query) || String(c.id).toLowerCase().includes(query));
+        list.sort((a, b) => {
+          const pinnedDifference = Number(Boolean(pins[String(b.id)])) - Number(Boolean(pins[String(a.id)]));
+          if (pinnedDifference) return pinnedDifference;
+          const latestMessage = contact => {
+            const history = isStaff()
+              ? messages.filter(message => String(message.studentId) === String(contact.id) && (String(message.from) === (session.role === 'teacher' ? 'teacher' : 'admin') || String(message.to) === (session.role === 'teacher' ? 'teacher' : 'admin')))
+              : conversationMessages(String(contact.id));
+            return history.length ? new Date(history[history.length - 1].createdAt).getTime() : 0;
+          };
+          return latestMessage(b) - latestMessage(a);
+        });
+        $('conversationList').innerHTML = list.map(c => {
+          const id = String(c.id),
+            history = isStaff() ? messages.filter(m => String(m.studentId) === String(id) && (String(m.from) === (session.role === 'teacher' ? 'teacher' : 'admin') || String(m.to) === (session.role === 'teacher' ? 'teacher' : 'admin'))) : conversationMessages(id),
+            last = history.at(-1),
+            unread = history.filter(m => m.to === (isStaff() ? (session.role === 'teacher' ? 'teacher' : 'admin') : session.studentId) && !m.seen).length;
+          return `<button class="conversation ${activeId === id ? 'active' : ''} flex w-full items-center gap-3 rounded-xl border border-transparent p-3 text-left transition" data-contact="${esc(id)}"><span class="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--color-primary)] font-bold text-[var(--color-primary-contrast)]">${esc(c.initials || String(c.name).slice(0,2))}${c.online ? '<i class="online-dot absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400"></i>' : ''}</span><span class="min-w-0 flex-1"><strong class="block truncate">${esc(c.name)}</strong><small class="flex items-center gap-1.5 truncate ${c.online ? 'text-[var(--color-online)]' : 'text-[var(--color-muted)]'}">${c.presenceUserId ? statusMarkup(c.presenceUserId) : `<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>${esc(c.statusText || c.role || 'Start a conversation')}</span>`}</small></span><span class="flex flex-col items-end gap-1"><span role="button" tabindex="0" data-pin="${esc(id)}" class="text-xs ${pins[id] ? 'text-[var(--color-primary)]' : 'text-[var(--color-muted)]'}" title="${pins[id] ? 'Unpin chat' : 'Pin chat'}">${pins[id] ? '📌' : '☆'}</span>${last ? `<small class="text-[var(--color-muted)]">${time(last.createdAt)}</small>` : ''}${unread ? `<b class="grid h-5 min-w-5 place-items-center rounded-full bg-[var(--color-primary)] px-1 text-xs text-[var(--color-primary-contrast)]">${unread}</b>` : ''}</span></button>`;
+        }).join('') || '<p class="p-5 text-center text-sm text-[var(--color-muted)]">No conversations found.</p>';
+        document.querySelectorAll('[data-contact]').forEach(button => button.onclick = () => openChat(button.dataset.contact));
+        document.querySelectorAll('[data-pin]').forEach(button => button.onclick = event => {
+          event.stopPropagation();
+          togglePin(button.dataset.pin);
+        });
+      }
+
+      function openChat(id) {
+        activeId = String(id);
+        const contact = contactFor(activeId) || groups.find(group => String(group.id) === activeId);
+        if (!contact) return;
+        $('emptyChat').classList.add('hidden');
+        $('activeChat').classList.remove('hidden');
+        $('activeChat').classList.add('flex');
+        $('inbox').classList.add('mobile-hidden');
+        $('chat').classList.remove('mobile-hidden');
+        $('contactAvatar').innerHTML = `${esc(contact.initials)}`;
+        $('contactAvatar').classList.toggle('presence-online', Boolean(contact.online));
+        $('contactName').textContent = contact.name;
+        $('contactStatus').innerHTML = contact.presenceUserId ? statusMarkup(contact.presenceUserId) : `<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>${esc(contact.statusText || `${contact.role} · Offline`)}</span>`;
+        renderMessages();
+        renderConversations();
+      }
+
+      function renderMessages() {
+        const history = conversationMessages(activeId);
+        const myInboxId = isStaff() ? (session.role === 'teacher' ? 'teacher' : 'admin') : session.studentId;
+        const messagesToMarkSeen = history.filter(m => m.to === myInboxId && !m.seen);
+        messagesToMarkSeen.forEach(message => {
+          message.seen = true;
+          if (window.iqraSupabase?.updateChatSeen && /^[0-9a-f-]{20,}$/i.test(String(message.id))) {
+            window.iqraSupabase.updateChatSeen(message.id).catch(() => {});
+          }
+        });
+        save();
+        $('messageList').innerHTML = history.length ? history.map(m => {
+          const mine = isStaff() ? m.from === (session.role === 'teacher' ? 'teacher' : 'admin') : m.from === session.studentId;
+          return `<div class="flex ${mine ? 'justify-end' : 'justify-start'}"><article class="bubble ${mine ? 'mine' : 'theirs'} rounded-2xl px-4 py-3 shadow-sm"><p class="whitespace-pre-wrap break-words text-sm leading-6">${esc(m.text)}</p>${attachmentMarkup(m)}<div class="mt-1 flex justify-end gap-1 text-[10px] opacity-70"><span>${dateLabel(m.createdAt)} · ${time(m.createdAt)}</span>${mine ? `<span>${m.seen ? '· Seen' : '· Sent'}</span>` : ''}${canDeleteMessage(m) ? `<button data-delete="${esc(m.id)}" class="ml-2 underline">Delete</button>` : ''}</div></article></div>`;
+        }).join('') : '<div class="grid h-full place-items-center text-center text-sm text-[var(--color-muted)]"><p>No messages yet.<br>Say hello to start the conversation.</p></div>';
+        $('messageList').scrollTop = $('messageList').scrollHeight;
+        document.querySelectorAll('[data-delete]').forEach(b => b.onclick = async () => {
+          const messageId = b.dataset.delete;
+          if (!messageId) return;
+
+          const targetMessage = messages.find(message => String(message.id) === String(messageId));
+          if (!canDeleteMessage(targetMessage)) {
+            notify('You can delete only your own messages');
+            return;
+          }
+
+          b.disabled = true;
+          b.textContent = 'Deleting...';
+
+          try {
+            if (window.iqraSupabase?.deleteChatMessage) {
+              await window.iqraSupabase.deleteChatMessage(messageId);
+            }
+          } catch (error) {
+            if (session.role !== 'student') {
+              b.disabled = false;
+              b.textContent = 'Delete';
+              notify('Could not delete the cloud message');
+              return;
+            }
+          }
+
+          messages = messages.filter(message => String(message.id) !== String(messageId));
+          save();
+          renderMessages();
+          renderConversations();
+          notify('Message deleted');
+        });
+      }
+
+      function toggleChatSettings() {
+        const menu = $('chatSettingsMenu');
+        const button = $('chatSettingsButton');
+        if (!menu || !button) return;
+        const isHidden = menu.classList.toggle('hidden');
+        button.setAttribute('aria-expanded', String(!isHidden));
+      }
+
+      function closeChatSettings() {
+        const menu = $('chatSettingsMenu');
+        const button = $('chatSettingsButton');
+        if (!menu || !button) return;
+        menu.classList.add('hidden');
+        button.setAttribute('aria-expanded', 'false');
+      }
+
+      function clearActiveChat() {
+        closeChatSettings();
+        if (!session || !activeId) return;
+        const contact = contactFor(activeId);
+        const label = contact?.name || 'this conversation';
+        if (!confirm(`Clear all messages with ${label}? This cannot be undone.`)) return;
+
+        const conversation = conversationMessages(activeId);
+        const removableIds = new Set(conversation.map(message => String(message.id)));
+        if (!removableIds.size) {
+          notify('There are no messages in this chat');
+          return;
+        }
+
+        const removeCloudMessages = async () => {
+          for (const id of removableIds) {
+            try {
+              await window.iqraSupabase?.deleteChatMessage(id);
+            } catch {
+              /* Keep the local chat usable if cloud deletion is unavailable. */
+            }
+          }
+        };
+
+        messages = messages.filter(message => !removableIds.has(String(message.id)));
+        save();
+        renderMessages();
+        renderConversations();
+        removeCloudMessages();
+        notify(`Chat with ${label} cleared`);
+      }
+
+      async function toggleVoiceRecording() {
+        const button = $('voiceButton');
+        const status = $('voiceStatus');
+        if (voiceRecorder && voiceRecorder.state === 'recording') {
+          voiceRecorder.stop();
+          button.textContent = '🎙️';
+          button.classList.remove('text-red-400');
+          status.classList.add('hidden');
+          return;
+        }
+        if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+          notify('Voice recording is not supported in this browser');
+          return;
+        }
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          voiceChunks = [];
+          voiceRecorder = new MediaRecorder(stream);
+          voiceRecorder.ondataavailable = event => {
+            if (event.data.size) voiceChunks.push(event.data);
+          };
+          voiceRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop());
+            const blob = new Blob(voiceChunks, { type: voiceRecorder.mimeType || 'audio/webm' });
+            voiceEncoding = true;
+            status.textContent = 'Preparing voice message…';
+            status.classList.remove('hidden');
+            const reader = new FileReader();
+            reader.onload = () => {
+              voiceData = String(reader.result || '');
+              voiceEncoding = false;
+              status.textContent = voiceData ? 'Voice message ready. Press send to share it.' : 'Voice recording is empty. Please record again.';
+              status.classList.remove('hidden');
+              button.disabled = false;
+            };
+            reader.onerror = () => {
+              voiceData = '';
+              voiceEncoding = false;
+              status.textContent = 'Could not prepare the voice message. Please try again.';
+              status.classList.remove('hidden');
+              button.disabled = false;
+            };
+            reader.readAsDataURL(blob);
+          };
+          voiceRecorder.start();
+          button.textContent = '⏹️';
+          button.classList.add('text-red-400');
+          status.textContent = 'Recording… press stop when finished.';
+          status.classList.remove('hidden');
+        } catch {
+          notify('Microphone permission was not granted');
+        }
+      }
+
+      const fileAsDataUrl = file => new Promise((resolve, reject) => {
+        if (!file) {
+          resolve('');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result || ''));
+        reader.onerror = () => reject(reader.error || new Error('Could not read the attachment'));
+        reader.readAsDataURL(file);
+      });
+
+      async function send(event) {
+        event.preventDefault();
+        const text = $('messageInput').value.trim();
+        if (voiceEncoding) {
+          notify('Please wait for the voice message to finish preparing');
+          return;
+        }
+        if (!text && !selectedFile && !voiceData) return;
+        const fileToSend = selectedFile;
+        const isAudioFile = fileToSend && (fileToSend.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|flac|ogg)$/i.test(fileToSend.name));
+        const isVideoFile = fileToSend && (fileToSend.type.startsWith('video/') || /\.(mp4|webm|mov|ogg|m4v|avi)$/i.test(fileToSend.name));
+        if (fileToSend && !isAudioFile && !isVideoFile && !fileToSend.type.startsWith('image/')) {
+          notify('Please attach an image, MP4 video, or MP3/audio file');
+          return;
+        }
+        const maxAttachmentSize = 100 * 1024 * 1024;
+        if (fileToSend && fileToSend.size > maxAttachmentSize) {
+          const fileKind = isAudioFile ? 'MP3/audio' : isVideoFile ? 'MP4/video' : 'attachment';
+          const sizeInMb = (fileToSend.size / (1024 * 1024)).toFixed(2);
+          notify(`${fileKind} is ${sizeInMb} MB. Maximum allowed is 100 MB.`, true);
+          selectedFile = null;
+          $('fileInput').value = '';
+          $('attachmentPreview').classList.add('hidden');
+          $('attachmentPreview').innerHTML = '';
+          return;
+        }
+        const from = isStaff() ? (session.role === 'teacher' ? 'teacher' : 'admin') : session.studentId;
+        const activeGroup = groups.find(group => String(group.id) === String(activeId));
+        const to = activeGroup ? activeGroup.id : (isStaff() ? activeId : activeId || 'admin');
+        const submitButton = $('composer').querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.classList.add('opacity-60');
+        }
+
+        let fileUrl = voiceData || '';
+        try {
+          // Blob URLs work only in the current browser. A data URL lets the
+          // other participant load the same photo, video, or voice message.
+          if (fileToSend) fileUrl = await fileAsDataUrl(fileToSend);
+        } catch {
+          notify('The photo or video could not be attached');
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.classList.remove('opacity-60');
+          }
+          return;
+        }
+
+        const outgoing = {
+          id: `${Date.now()}-${Math.random()}`,
+          studentId: activeGroup ? activeGroup.id : (isStaff() ? activeId : session.studentId),
+          from,
+          to,
+          text,
+          fileName: fileToSend?.name || (voiceData ? `voice-${Date.now()}.webm` : ''),
+          fileType: fileToSend?.type || (fileToSend && isAudioFile ? 'audio/mpeg' : fileToSend && isVideoFile ? 'video/mp4' : (voiceData ? 'audio/webm' : '')),
+          fileUrl,
+          voiceUrl: voiceData,
+          createdAt: new Date().toISOString(),
+          seen: false
+        };
+        messages.push(outgoing);
+        save();
+        renderMessages();
+        renderConversations();
+        notify('Message sent');
+
+        if (window.iqraSupabase?.saveChatMessage && !activeGroup) {
+          window.iqraSupabase.saveChatMessage(outgoing)
+            .then(rows => {
+              const savedMessage = Array.isArray(rows) ? rows[0] : rows;
+              if (savedMessage?.id) {
+                outgoing.id = String(savedMessage.id);
+                save();
+              }
+            })
+            .catch(() => notify('Message saved here, but cloud sync is unavailable'));
+        }
+        $('messageInput').value = '';
+        selectedFile = null;
+        voiceData = '';
+        voiceEncoding = false;
+        $('fileInput').value = '';
+        $('attachmentPreview').classList.add('hidden');
+        $('attachmentPreview').innerHTML = '';
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.classList.remove('opacity-60');
+        }
+      }
+
+      function updateLoginMode() {
+        const isStudentId = /^\d+$/.test($('loginId').value.trim());
+        $('passwordLabel').classList.toggle('hidden', isStudentId);
+        $('loginPassword').required = !isStudentId;
+        $('loginError').textContent = '';
+      }
+
+      function setup() {
+        $('closeMessageNotification').onclick = closeMessageNotification;
+        $('openMessageNotification').onclick = () => {
+          const contactId = pendingNotificationContactId;
+          closeMessageNotification();
+          if (contactId) openChat(contactId);
+        };
+        $('loginForm').onsubmit = login;
+        $('loginId').oninput = updateLoginMode;
+        $('studentContactForm').onsubmit = openStudentChat;
+        $('newGroupButton').onclick = createGroup;
+        $('composer').onsubmit = send;
+        $('voiceButton').onclick = toggleVoiceRecording;
+        $('messageInput').onkeydown = event => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            $('composer').requestSubmit();
+          }
+        };
+        $('search').oninput = renderConversations;
+        $('logout').onclick = () => {
+          localStorage.removeItem(SESSION);
+          location.reload();
+        };
+        $('themeToggle').onclick = () => {
+          const next = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+          document.documentElement.dataset.theme = next;
+          localStorage.setItem('iqraMessageTheme', next);
+        };
+        $('backToInbox').onclick = () => {
+          $('inbox').classList.remove('mobile-hidden');
+          $('chat').classList.add('mobile-hidden');
+        };
+        $('chatSettingsButton').onclick = toggleChatSettings;
+        $('clearChatButton').onclick = clearActiveChat;
+        $('deleteConversationButton').onclick = clearActiveChat;
+        document.addEventListener('click', event => {
+          if (!event.target.closest('#chatSettingsButton') && !event.target.closest('#chatSettingsMenu')) closeChatSettings();
+        });
+        $('emojiButton').onclick = () => $('emojiPanel').classList.toggle('hidden');
+        document.querySelectorAll('#emojiPanel button').forEach(b => b.onclick = () => {
+          $('messageInput').value += b.textContent;
+          $('messageInput').focus();
+        });
+        $('fileInput').onchange = e => {
+          const file = e.target.files[0];
+          const maxAttachmentSize = 100 * 1024 * 1024;
+          if (file && file.size > maxAttachmentSize) {
+            const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|flac|ogg)$/i.test(file.name);
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov|ogg|m4v|avi)$/i.test(file.name);
+            const fileKind = isAudio ? 'MP3/audio' : isVideo ? 'MP4/video' : 'Attachment';
+            const sizeInMb = (file.size / (1024 * 1024)).toFixed(2);
+            selectedFile = null;
+            e.target.value = '';
+            $('attachmentPreview').classList.add('hidden');
+            $('attachmentPreview').innerHTML = '';
+            notify(`${fileKind} is ${sizeInMb} MB. Maximum allowed is 100 MB.`);
+            return;
+          }
+          selectedFile = file || null;
+          if (selectedFile) {
+            $('attachmentPreview').innerHTML = `<span class="file-chip inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs">📎 ${esc(selectedFile.name)} <button type="button" id="clearFile">×</button></span>`;
+            $('attachmentPreview').classList.remove('hidden');
+            $('clearFile').onclick = () => {
+              selectedFile = null;
+              $('fileInput').value = '';
+              $('attachmentPreview').classList.add('hidden');
+              $('attachmentPreview').innerHTML = '';
+            };
+          } else {
+            $('attachmentPreview').classList.add('hidden');
+            $('attachmentPreview').innerHTML = '';
+          }
+        };
+        $('messageInput').oninput = () => {
+          $('typingIndicator').classList.remove('hidden');
+          clearTimeout(window.typingTimer);
+          window.typingTimer = setTimeout(() => $('typingIndicator').classList.add('hidden'), 1000);
+        };
+      }
+      students = read(STUDENTS, []);
+      messages = read(MESSAGES, []);
+      groups = read(GROUPS, []);
+      pins = read(PINS, {});
+      const knownStudentIds = new Set(students.map(student => String(student.id)));
+      messages = messages.filter(message => {
+        const studentId = String(message.studentId || '');
+        const from = String(message.from || '');
+        const to = String(message.to || '');
+        const isGroupMessage = studentId.startsWith('group:');
+        return (isGroupMessage || knownStudentIds.has(studentId)) && (from === 'admin' || from === 'teacher' || knownStudentIds.has(from)) && (to === 'admin' || to === 'teacher' || knownStudentIds.has(to) || to.startsWith('group:'));
+      });
+      save();
+      session = read(SESSION, null);
+      const portalSession = read('iqraPortalSession2026', null);
+      if (portalSession?.role === 'admin') {
+        session = {
+          role: 'admin',
+          username: portalSession.username || 'admin@.iqra'
+        };
+      } else if (portalSession?.role === 'student' && portalSession.id !== undefined) {
+        const portalStudent = students.find(student => String(student.id) === String(portalSession.id));
+        session = portalStudent ? {
+          role: 'student',
+          studentId: String(portalStudent.id)
+        } : null;
+      }
+      if (session?.role === 'student' && currentStudent()) {
+        localStorage.setItem(SESSION, JSON.stringify({
+          role: 'student',
+          studentId: String(session.studentId)
+        }));
+      } else if (session?.role === 'admin') {
+        localStorage.setItem(SESSION, JSON.stringify({
+          role: 'admin',
+          username: session.username || 'admin@.iqra'
+        }));
+      }
+      document.documentElement.dataset.theme = localStorage.getItem('iqraMessageTheme') || ''; setup();
+      if (isStaff() || (session?.role === 'student' && currentStudent())) {
+        showApp();
+        syncCloudMessages();
+        updatePresence();
+                  setInterval(() => {
+          syncCloudMessages();
+          updatePresence();
+          renderConversations();
+          if (activeId) {
+            const activeContact = contactFor(activeId);
+            if (activeContact) {
+              $('contactStatus').innerHTML = activeContact.presenceUserId ? statusMarkup(activeContact.presenceUserId) : `<span class="status-dot status-dot-offline" aria-hidden="true"></span><span>${esc(activeContact.statusText || `${activeContact.role} · Offline`)}</span>`;
+              $('contactAvatar').classList.toggle('presence-online', Boolean(activeContact.online));
+            }
+          }
+        }, 1000);
+
+        window.addEventListener('storage', event => {
+          if (event.key !== MESSAGES || !session) return;
+          const nextMessages = read(MESSAGES, []);
+          const previousIds = new Set(messages.map(message => String(message.id)));
+          const inboxId = isStaff() ? (session.role === 'teacher' ? 'teacher' : 'admin') : String(session.studentId);
+          const incomingMessage = nextMessages.find(message => !previousIds.has(String(message.id)) && String(message.to) === inboxId);
+          messages = nextMessages;
+          if (incomingMessage) showMessageNotification(incomingMessage);
+          renderConversations();
+          if (activeId) renderMessages();
+        });
+      }
+    })();
+
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"e3c1c9af36de41759418005494a48906","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+
+</html>
