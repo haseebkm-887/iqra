@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IQRA student portfolio directory">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Student Portfolios | IQRA’ Portal</title>
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--color-primary) 18%, transparent), transparent 28rem),
+        var(--color-bg);
+    }
+
+    .portfolio-card {
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .portfolio-card:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--color-primary) 55%, transparent);
+      box-shadow: 0 18px 45px color-mix(in srgb, var(--color-primary) 12%, transparent);
+    }
+
+    .avatar-fallback {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary, var(--color-primary)));
+      color: var(--color-primary-contrast);
+    }
+
+    .profile-photo {
+      border: 3px solid var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+    }
+
+  </style>
+</head>
+
+<body class="min-h-screen text-[var(--color-text)]">
+  <header class="border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[var(--color-surface)]/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <a href="/" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-logo-stroke)] bg-[var(--color-logo-bg)] font-heading text-xl font-bold text-[var(--color-logo-contrast)]" aria-hidden="true">I</span>
+        <span>
+          <strong class="font-heading">IQRA’ Portal</strong>
+          <span class="block text-xs text-[var(--color-muted)]">Student community</span>
+        </span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button id="themeToggle" type="button" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-3 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]" aria-label="Toggle appearance">◐</button>
+        <a href="/" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">Back to portal</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-7xl px-5 py-10 sm:px-8 sm:py-14">
+    <section class="mb-9 max-w-3xl">
+      <p class="text-sm font-bold uppercase tracking-[.22em] text-[var(--color-primary)]">Class directory</p>
+      <h1 class="mt-3 font-heading text-4xl font-bold leading-tight sm:text-6xl">Student portfolios.</h1>
+      <p class="mt-4 text-lg leading-8 text-[var(--color-muted)]">Explore the work, interests, and creative projects shared by our class community.</p>
+    </section>
+
+    <section class="mb-8 flex flex-col gap-3 sm:flex-row">
+      <label class="flex-1">
+        <span class="sr-only">Search students</span>
+        <input id="search" type="search" placeholder="Search by student name or ID…" class="w-full rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_14%,transparent)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none placeholder:text-[var(--color-muted)] focus:border-[var(--color-primary)]">
+      </label>
+      <span id="count" class="rounded-[var(--radius)] bg-[var(--color-primary)]/10 px-4 py-3 text-sm font-semibold text-[var(--color-primary)]"></span>
+    </section>
+
+    <section id="portfolioGrid" class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></section>
+  </main>
+
+  <footer class="border-t border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] px-5 py-7 text-center text-sm text-[var(--color-muted)] sm:px-8">
+    <p>IQRA’ Portal · A space for learning and sharing</p>
+  </footer>
+
+  <script>
+    (() => {
+      const DATA_KEY = 'iqraPortalData2026';
+      const fallbackStudents = [{
+          id: 1,
+          name: 'BASITH',
+          score: 0,
+          attendance: 92,
+          photo: '',
+          portfolioLink: ''
+        },
+        {
+          id: 2,
+          name: 'HASEEF',
+          score: 0,
+          attendance: 92,
+          photo: '',
+          portfolioLink: ''
+        },
+        {
+          id: 3,
+          name: 'AJMAL',
+          score: 0,
+          attendance: 92,
+          photo: '',
+          portfolioLink: ''
+        }
+      ];
+      let students = [];
+
+      const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      } [character]));
+
+      const readStudents = () => {
+        try {
+          const saved = JSON.parse(localStorage.getItem(DATA_KEY));
+          return Array.isArray(saved) && saved.length ? saved : fallbackStudents;
+        } catch {
+          return fallbackStudents;
+        }
+      };
+
+      const avatar = student => {
+        if (student.photo) return `<img src="${escapeHtml(student.photo)}" alt="${escapeHtml(student.name)}" class="profile-photo h-16 w-16 rounded-2xl object-cover">`;
+        return `<span class="avatar-fallback profile-photo grid h-16 w-16 place-items-center rounded-2xl font-heading text-xl font-bold">${escapeHtml(String(student.name || '?').slice(0, 2).toUpperCase())}</span>`;
+      };
+
+      const render = query => {
+        const normalizedQuery = query.trim().toLowerCase();
+        const filtered = students.filter(student => {
+          const name = String(student.name || '').toLowerCase();
+          return !normalizedQuery || name.includes(normalizedQuery) || String(student.id).includes(normalizedQuery);
+        });
+
+        document.getElementById('count').textContent = `${filtered.length} student${filtered.length === 1 ? '' : 's'}`;
+        document.getElementById('portfolioGrid').innerHTML = filtered.length ? filtered.map(student => {
+          const link = String(student.portfolioLink || '').trim();
+          const validLink = /^https?:\/\//i.test(link);
+          return `<article class="portfolio-card glass rounded-[var(--radius)] p-5">
+            <div class="flex items-center gap-4">${avatar(student)}<div class="min-w-0"><h2 class="truncate font-heading text-lg font-bold">${escapeHtml(student.name)}</h2><p class="text-sm text-[var(--color-muted)]">Student ID #${escapeHtml(student.id)}</p></div></div>
+            <div class="mt-5 grid grid-cols-2 gap-3 text-sm">
+              <div class="rounded-xl bg-[var(--color-primary)]/10 p-3"><span class="block text-[var(--color-muted)]">Score</span><strong class="mt-1 block text-lg">${escapeHtml(student.score || 0)}%</strong></div>
+              <div class="rounded-xl bg-[var(--color-primary)]/10 p-3"><span class="block text-[var(--color-muted)]">Attendance</span><strong class="mt-1 block text-lg">${escapeHtml(student.attendance || 0)}%</strong></div>
+            </div>
+            ${validLink ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer" class="mt-5 block rounded-xl bg-[var(--color-primary)] px-4 py-3 text-center text-sm font-bold text-[var(--color-primary-contrast)] transition hover:brightness-110">View portfolio ↗</a>` : '<p class="mt-5 rounded-xl bg-[var(--color-text)]/5 px-4 py-3 text-center text-sm text-[var(--color-muted)]">Portfolio not added yet</p>'}
+          </article>`;
+        }).join('') : '<div class="glass col-span-full rounded-[var(--radius)] p-12 text-center"><p class="font-heading text-xl font-bold">No students found</p><p class="mt-2 text-[var(--color-muted)]">Try another name or student ID.</p></div>';
+      };
+
+      const themeToggle = document.getElementById('themeToggle');
+      document.documentElement.dataset.theme = localStorage.getItem('iqraPortalTheme2026') || '';
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+        document.documentElement.dataset.theme = nextTheme;
+        localStorage.setItem('iqraPortalTheme2026', nextTheme);
+      });
+
+      students = readStudents();
+      const activeStudentIds = new Set(students.map(student => String(student.id)));
+      students = students.filter(student => activeStudentIds.has(String(student.id)));
+      render('');
+      document.getElementById('search').addEventListener('input', event => render(event.target.value));
+    })();
+
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"e3c1c9af36de41759418005494a48906","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+
+</html>
