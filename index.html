@@ -551,19 +551,18 @@
         });
         document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
           if (b.dataset.view === 'portfolio') {
-            window.location.href = '/portfolio';
+            window.location.href = 'portfolios.html';
             return;
           }
           if (b.dataset.view === 'message') {
-            window.location.href = '/message';
+            window.location.href = 'messege.html';
             return;
           }
           if (b.dataset.view === 'suggestions' && state.role === 'student') {
-            window.location.href = '/suggestions';
-            return;
-          }
-          if (b.dataset.view === 'portfolio') {
-            window.location.href = '/portfolio';
+            state.view = 'suggestions';
+            state.page = 1;
+            closeNav();
+            layout();
             return;
           }
           state.view = b.dataset.view;
@@ -573,7 +572,7 @@
         });
         document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => studentModal());
         document.querySelectorAll('[data-fest-register]').forEach(b => b.onclick = () => {
-          window.location.href = '/portfolio';
+          window.location.href = 'portfolios.html';
         });
         document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => studentModal(Number(b.dataset.edit)));
         document.querySelectorAll('[data-delete]').forEach(b => b.onclick = async () => {

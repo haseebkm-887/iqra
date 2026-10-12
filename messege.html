@@ -222,13 +222,17 @@
 <body class="min-h-screen text-[var(--color-text)]">
   <header class="border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[var(--color-surface)]/80 backdrop-blur-xl">
     <div class="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-4 sm:px-8">
-      <a href="/" class="flex items-center gap-3">
+      <a href="index.html" class="flex items-center gap-3">
         <span class="grid h-10 w-10 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-logo-stroke)] bg-[var(--color-logo-bg)] font-heading text-xl font-bold text-[var(--color-logo-contrast)]" aria-hidden="true">I</span>
         <span><strong class="font-heading">IQRA’ Portal</strong><span class="block text-xs text-[var(--color-muted)]">Secure messages</span></span>
       </a>
       <div class="flex items-center gap-2">
         <button id="themeToggle" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-3 py-2" aria-label="Toggle theme">◐</button>
-        <a href="/" class="hidden rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold sm:block">Back to portal</a>
+        <nav class="hidden items-center gap-2 sm:flex">
+          <a href="index.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold">Home</a>
+          <a href="portfolios.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold">Portfolios</a>
+        </nav>
+        <a href="index.html" class="hidden rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold sm:block">Back to portal</a>
       </div>
     </div>
   </header>
