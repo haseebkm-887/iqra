@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Share feedback and suggestions with the IQRA Portal team.">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <title>Suggestion Box | IQRA’ Portal</title>
+  <style>
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--color-primary) 22%, transparent), transparent 28rem), radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--color-secondary, var(--color-primary)) 18%, transparent), transparent 24rem), var(--color-bg);
+    }
+
+    .suggestion-shell {
+      animation: suggestionRise .65s ease both;
+    }
+
+    .field-wrap {
+      position: relative;
+    }
+
+    .field-wrap .field-icon {
+      position: absolute;
+      top: 2.7rem;
+      left: 1rem;
+      color: var(--color-muted);
+      pointer-events: none;
+    }
+
+    .field-wrap .field {
+      padding-left: 2.8rem;
+    }
+
+    .field-wrap textarea.field {
+      padding-left: 1rem;
+    }
+
+    /* Form layout fixes: keep every label and control aligned and full-width. */
+    #suggestionForm > label,
+    #suggestionForm .field-wrap {
+      display: block !important;
+      width: 100%;
+    }
+
+    #suggestionForm .field {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 46px;
+      color: var(--color-text);
+      background: color-mix(in srgb, var(--color-bg) 78%, var(--color-surface));
+    }
+
+    #suggestionForm textarea.field {
+      min-height: 150px;
+      line-height: 1.5;
+    }
+
+    #suggestionForm select.field {
+      appearance: none;
+      padding-right: 2.75rem;
+      background-image: linear-gradient(45deg, transparent 50%, var(--color-muted) 50%), linear-gradient(135deg, var(--color-muted) 50%, transparent 50%);
+      background-position: calc(100% - 18px) calc(50% - 2px), calc(100% - 12px) calc(50% + 2px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    #suggestionForm .field-wrap .field-icon {
+      z-index: 1;
+    }
+
+    @media (max-width: 639px) {
+      #suggestionForm > .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .submit-button {
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+      box-shadow: 0 14px 30px color-mix(in srgb, var(--color-primary) 25%, transparent);
+    }
+
+    .submit-button:active {
+      transform: translateY(0) scale(.98);
+    }
+
+    .submit-button.loading {
+      pointer-events: none;
+      opacity: .8;
+    }
+
+    .success-message {
+      animation: suggestionRise .4s ease both;
+    }
+
+    @keyframes suggestionRise {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+  </style>
+</head>
+
+<body class="text-[var(--color-text)]">
+  <header class="border-b border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] bg-[var(--color-surface)]/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <a href="index.html" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-logo-stroke)] bg-[var(--color-logo-bg)] font-heading text-xl font-bold text-[var(--color-logo-contrast)]" aria-hidden="true">I</span>
+        <span><strong class="font-heading">IQRA’ Portal</strong><span class="block text-xs text-[var(--color-muted)]">Class community</span></span>
+      </a>
+      <nav class="flex items-center gap-2">
+        <a href="index.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">Home</a>
+        <a href="portfolios.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">Portfolios</a>
+        <a href="messege.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">Messages</a>
+      </nav>
+      <a href="index.html" class="rounded-[var(--radius)] border border-[color-mix(in_srgb,var(--color-text)_12%,transparent)] px-4 py-2 text-sm font-semibold transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]">Back to portal</a>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-16">
+    <div class="suggestion-shell mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1fr_1.15fr]">
+      <section class="flex flex-col justify-between rounded-[calc(var(--radius)*1.5)] bg-[var(--color-primary)] p-7 text-[var(--color-primary-contrast)] shadow-2xl sm:p-10">
+        <div>
+          <span class="grid h-14 w-14 place-items-center rounded-2xl bg-[color-mix(in_srgb,var(--color-primary-contrast)_18%,transparent)] text-2xl"><i class="fa-solid fa-lightbulb"></i></span>
+          <p class="mt-8 text-sm font-bold uppercase tracking-[.22em] opacity-70">Your voice matters</p>
+          <h1 class="mt-3 font-heading text-4xl font-bold leading-tight sm:text-5xl">Suggestion Box</h1>
+          <p class="mt-5 max-w-md leading-7 opacity-80">We value your feedback. Share your ideas, suggestions, or report any issues.</p>
+        </div>
+        <div class="mt-12 rounded-2xl bg-[color-mix(in_srgb,var(--color-primary-contrast)_12%,transparent)] p-4 text-sm leading-6 opacity-85">Every thoughtful idea helps us make the class experience better for everyone.</div>
+      </section>
+
+      <section class="glass rounded-[calc(var(--radius)*1.5)] p-6 shadow-2xl sm:p-9">
+        <form id="suggestionForm" novalidate>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="field-wrap block text-sm font-semibold">Full Name <span class="font-normal text-[var(--color-muted)]">(optional)</span><i class="field-icon fa-regular fa-user"></i><input id="name" class="field mt-2" type="text" maxlength="80" placeholder="Your name"></label>
+            <label class="field-wrap block text-sm font-semibold">Email <span class="font-normal text-[var(--color-muted)]">(optional)</span><i class="field-icon fa-regular fa-envelope"></i><input id="email" class="field mt-2" type="email" maxlength="120" placeholder="you@example.com"></label>
+          </div>
+          <label class="field-wrap mt-5 block text-sm font-semibold">Suggestion Category<i class="field-icon fa-solid fa-layer-group"></i><select id="category" class="field mt-2">
+              <option>Feedback</option>
+              <option>Improvement</option>
+              <option>Bug Report</option>
+              <option>Feature Request</option>
+              <option>Other</option>
+            </select></label>
+          <label class="mt-5 block text-sm font-semibold">Suggestion Message<textarea id="message" class="field mt-2 min-h-36 resize-y" maxlength="1000" placeholder="Tell us what you are thinking..." required></textarea><span class="mt-2 flex justify-between text-xs text-[var(--color-muted)]"><span id="messageError" class="text-red-400"></span><span><b id="characterCount">0</b> / 1000</span></span></label>
+          <button id="submitButton" class="submit-button mt-5 flex w-full items-center justify-center gap-2 rounded-[var(--radius)] bg-[var(--color-primary)] py-3.5 font-bold text-[var(--color-primary-contrast)]" type="submit"><i class="fa-solid fa-paper-plane"></i><span>Submit Suggestion</span></button>
+          <p id="successMessage" class="success-message mt-4 hidden rounded-xl bg-[var(--color-primary)]/10 p-4 text-center text-sm font-semibold text-[var(--color-primary)]">Thank you! Your suggestion has been received.</p>
+        </form>
+
+        <div class="mt-9 border-t border-[color-mix(in_srgb,var(--color-text)_10%,transparent)] pt-7">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-heading text-xl font-bold">Recent Suggestions</h2><span class="text-xs text-[var(--color-muted)]">Latest 5 · anonymous</span>
+          </div>
+          <div id="recentSuggestions" class="mt-4 space-y-3"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/supabase.js"></script>
+  <script>
+    (() => {
+      const STORAGE_KEY = 'iqraPortalSuggestions2026';
+      const form = document.getElementById('suggestionForm');
+      const message = document.getElementById('message');
+      const count = document.getElementById('characterCount');
+      const error = document.getElementById('messageError');
+      const button = document.getElementById('submitButton');
+      const success = document.getElementById('successMessage');
+      const recent = document.getElementById('recentSuggestions');
+
+      const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      } [character]));
+      const readLocal = () => {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch {
+          return [];
+        }
+      };
+      const saveLocal = items => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(items.slice(-50)));
+        } catch {
+          /* Keep the form usable when browser storage is unavailable. */
+        }
+      };
+      const render = items => {
+        const latest = items.slice(-5).reverse();
+        recent.innerHTML = latest.length ? latest.map(item => `<article class="rounded-xl bg-[var(--color-primary)]/8 p-4"><div class="flex items-center justify-between gap-3"><span class="text-xs font-bold uppercase tracking-wider text-[var(--color-primary)]">${escapeHtml(item.category)}</span><time class="text-xs text-[var(--color-muted)]">${escapeHtml(item.createdAt)}</time></div><p class="mt-2 text-sm leading-6">${escapeHtml(item.message)}</p></article>`).join('') : '<p class="rounded-xl bg-[var(--color-text)]/5 p-4 text-sm text-[var(--color-muted)]">Your submitted ideas will appear here.</p>';
+      };
+
+      const sync = async () => {
+        render(readLocal());
+        try {
+          const cloud = await window.iqraSupabase?.getSuggestions();
+          if (Array.isArray(cloud)) {
+            const items = cloud.map(item => ({
+              id: item.id ?? item.created_at ?? item.message,
+              name: item.name || '',
+              email: item.email || '',
+              category: item.category || 'Feedback',
+              message: item.message || '',
+              createdAt: new Date(item.created_at || Date.now()).toLocaleString()
+            }));
+            saveLocal(items);
+            render(items);
+          }
+        } catch {
+          /* Local suggestions remain available if the cloud table is not ready. */ }
+      };
+
+      message.addEventListener('input', () => {
+        count.textContent = message.value.length;
+        error.textContent = '';
+      });
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        const text = message.value.trim();
+        if (!text) {
+          error.textContent = 'Please enter a suggestion message.';
+          message.focus();
+          return;
+        }
+        button.classList.add('loading');
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Sending...</span>';
+        const item = {
+          name: document.getElementById('name').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          category: document.getElementById('category').value,
+          message: text,
+          createdAt: new Date().toLocaleString()
+        };
+        const items = [...readLocal(), item];
+        saveLocal(items);
+        render(items);
+        try {
+          if (window.iqraSupabase?.saveSuggestion) {
+            await window.iqraSupabase.saveSuggestion(item);
+          }
+        } catch {
+          /* The local copy is still saved. */
+        }
+        form.reset();
+        count.textContent = '0';
+        success.classList.remove('hidden');
+        button.classList.remove('loading');
+        button.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Submit Suggestion</span>';
+        setTimeout(() => success.classList.add('hidden'), 5000);
+      });
+      sync();
+    })();
+
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"e3c1c9af36de41759418005494a48906","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+
+</html>
