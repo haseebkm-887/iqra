@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IQRA Class Portal dashboard">
+  <link rel="stylesheet" href="/theme.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23a3e635'/%3E%3Cpath d='M27 14h10v36H27z' fill='white'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+        <script src="/supabase.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <title>IQRA’ Portal 2026</title>
+  <style>
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border: 2px solid var(--color-logo-stroke);
+      background: var(--color-logo-bg);
+      color: var(--color-logo-contrast);
+      font-family: var(--font-heading);
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1;
+      box-shadow: 0 8px 20px color-mix(in srgb, var(--color-logo-stroke) 18%, transparent);
+    }
+
+    .brand-mark span {
+      transform: translateY(-1px);
+    }
+
+    .brand-mark:hover {
+      filter: brightness(1.04);
+    }
+
+    :root {
+      --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+      --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+      --radius: 24px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--color-primary) 20%, transparent), transparent 35rem), var(--color-bg);
+    }
+
+    .font-heading {
+      font-family: var(--font-heading);
+    }
+
+    .glass {
+      background: color-mix(in srgb, var(--color-surface) 84%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .gradient {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-secondary) 60%, var(--color-accent));
+    }
+
+    .field {
+      width: 100%;
+      border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
+      background: color-mix(in srgb, var(--color-bg) 76%, transparent);
+      color: var(--color-text);
+      border-radius: .75rem;
+      padding: .75rem .9rem;
+      outline: 0;
+    }
+
+    .field:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+    }
+
+    .active {
+      background: var(--color-primary);
+      color: var(--color-primary-contrast) !important;
+    }
+
+    .fade {
+      animation: fade .3s ease both;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+  </style>
+
+<style>
+  .iqra-photo-logo {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #c88fbd, #7d6cac 52%, #1f285d) !important;
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  }
+
+  .iqra-photo-logo::before,
+  .iqra-photo-logo::after {
+    content: '';
+    position: absolute;
+    top: -18%;
+    width: 42%;
+    height: 136%;
+    border-radius: 48% 10% 48% 10%;
+    transform: rotate(24deg);
+    background: color-mix(in srgb, #ffffff 22%, transparent);
+  }
+
+  .iqra-photo-logo::before {
+    left: -12%;
+  }
+
+  .iqra-photo-logo::after {
+    right: -12%;
+    transform: rotate(-24deg);
+    background: color-mix(in srgb, #11194c 42%, transparent);
+  }
+
+  .iqra-photo-logo > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .iqra-logo-button {
+    cursor: pointer;
+    transition: transform .2s ease, filter .2s ease;
+  }
+
+  .iqra-logo-button:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px) scale(1.03);
+  }
+</style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-auto{pointer-events:auto}.fixed{position:fixed}.sticky{position:sticky}.inset-0{inset:0px}.inset-y-0{top:0px;bottom:0px}.bottom-5{bottom:1.25rem}.right-5{right:1.25rem}.left-0{left:0px}.top-0{top:0px}.z-50{z-index:50}.z-\[80\]{z-index:80}.z-40{z-index:40}.z-30{z-index:30}.z-20{z-index:20}.z-\[10000\]{z-index:10000}.mx-auto{margin-left:auto;margin-right:auto}.my-8{margin-top:2rem;margin-bottom:2rem}.mt-4{margin-top:1rem}.mb-12{margin-bottom:3rem}.mt-6{margin-top:1.5rem}.mb-9{margin-bottom:2.25rem}.mb-4{margin-bottom:1rem}.mt-2{margin-top:0.5rem}.mt-3{margin-top:0.75rem}.mt-8{margin-top:2rem}.mt-1{margin-top:0.25rem}.mt-auto{margin-top:auto}.ml-2{margin-left:0.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-16{height:4rem}.h-11{height:2.75rem}.h-12{height:3rem}.h-10{height:2.5rem}.min-h-screen{min-height:100vh}.min-h-\[600px\]{min-height:600px}.w-16{width:4rem}.w-full{width:100%}.w-11{width:2.75rem}.w-12{width:3rem}.w-72{width:18rem}.w-10{width:2.5rem}.max-w-sm{max-width:24rem}.max-w-5xl{max-width:64rem}.max-w-md{max-width:28rem}.max-w-\[1500px\]{max-width:1500px}.max-w-lg{max-width:32rem}.-translate-x-full{--tw-translate-x:-100%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.flex-col{flex-direction:column}.place-items-center{place-items:center}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-3{gap:0.75rem}.gap-2{gap:0.5rem}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.rounded-2xl{border-radius:1rem}.rounded-xl{border-radius:0.75rem}.rounded-\[2rem\]{border-radius:2rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-\[var\(--radius\)\]{border-radius:var(--radius)}.border{border-width:1px}.border-r{border-right-width:1px}.border-b{border-bottom-width:1px}.border-white\/10{border-color:rgb(255 255 255 / 0.1)}.bg-\[var\(--color-bg\)\]{background-color:var(--color-bg)}.bg-\[var\(--color-primary\)\]{background-color:var(--color-primary)}.bg-\[var\(--color-surface\)\]{background-color:var(--color-surface)}.bg-white\/20{background-color:rgb(255 255 255 / 0.2)}.bg-white\/15{background-color:rgb(255 255 255 / 0.15)}.bg-black\/60{background-color:rgb(0 0 0 / 0.6)}.bg-black\/65{background-color:rgb(0 0 0 / 0.65)}.p-5{padding:1.25rem}.p-12{padding:3rem}.p-7{padding:1.75rem}.p-4{padding:1rem}.p-2{padding:0.5rem}.p-6{padding:1.5rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-4{padding-top:1rem;padding-bottom:1rem}.px-4{padding-left:1rem;padding-right:1rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.text-left{text-align:left}.text-center{text-align:center}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-6xl{font-size:3.75rem;line-height:1}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-tight{line-height:1.25}.tracking-\[\.25em\]{letter-spacing:.25em}.tracking-widest{letter-spacing:0.1em}.text-\[var\(--color-text\)\]{color:var(--color-text)}.text-\[var\(--color-primary-contrast\)\]{color:var(--color-primary-contrast)}.text-\[var\(--color-muted\)\]{color:var(--color-muted)}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/70{color:rgb(255 255 255 / 0.7)}.text-white\/75{color:rgb(255 255 255 / 0.75)}.text-\[var\(--color-primary\)\]{color:var(--color-primary)}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.accent-\[var\(--color-primary\)\]{accent-color:var(--color-primary)}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.backdrop-blur-xl{--tw-backdrop-blur:blur(24px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.hover\:scale-\[1\.01\]:hover{--tw-scale-x:1.01;--tw-scale-y:1.01;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:bg-red-500\/10:hover{background-color:rgb(239 68 68 / 0.1)}@media (min-width: 640px){.sm\:p-12{padding:3rem}.sm\:p-8{padding:2rem}.sm\:px-8{padding-left:2rem;padding-right:2rem}}@media (min-width: 768px){.md\:ml-72{margin-left:18rem}.md\:hidden{display:none}.md\:translate-x-0{--tw-translate-x:0px;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}}@media (min-width: 1024px){.lg\:flex{display:flex}.lg\:hidden{display:none}.lg\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}}</style></head>
+
+<body class="min-h-screen text-[var(--color-text)]">
+  
+  <div id="toast" class="fixed bottom-5 right-5 z-[80] hidden max-w-sm rounded-xl border border-white/10 bg-[var(--color-surface)] px-5 py-4 shadow-2xl"></div>
+
+  <section id="login" class="min-h-screen items-center justify-center p-5 flex">
+    <div class="grid w-full max-w-5xl overflow-hidden rounded-[2rem] glass shadow-2xl lg:grid-cols-2">
+      <div class="hidden min-h-[600px] flex-col justify-between p-12 gradient text-white lg:flex">
+        <div>
+          <div class="mb-12 flex items-center gap-3">
+            <span class="grid h-11 w-11 place-items-center rounded-[var(--radius)] border-2 border-[var(--color-logo-stroke)] bg-[var(--color-logo-bg)] font-heading text-2xl font-bold text-[var(--color-logo-contrast)]" aria-hidden="true">I</span>
+            <b class="font-heading text-xl">IQRA’ Portal</b>
+          </div>
+          <p class="text-sm uppercase tracking-[.25em] text-white/70">Class operations</p>
+          <h1 class="mt-4 max-w-md font-heading text-6xl font-bold leading-tight">A clearer way to manage your class.</h1>
+          <p class="mt-6 max-w-md text-lg text-white/75">One calm workspace for students, scores, attendance, and progress.</p>
+        </div>
+        <div class="flex gap-2 text-sm text-white/75"><span class="rounded-full bg-white/15 px-4 py-2">Local &amp; offline</span><span class="rounded-full bg-white/15 px-4 py-2">2026 edition</span></div>
+      </div>
+      <div class="p-7 sm:p-12">
+        <div class="mb-9 lg:hidden">
+          
+          <p class="text-sm text-[var(--color-muted)]">IQRA’ Portal 2026</p>
+        </div>
+        <p class="text-sm font-bold text-[var(--color-primary)]">WELCOME BACK</p>
+        <h2 class="mt-2 font-heading text-4xl font-bold">Sign in</h2>
+        <p class="mt-3 text-[var(--color-muted)]">Enter your student name or ID. Names are not case-sensitive.</p>
+        <form id="loginForm" class="mt-8 space-y-4"><label class="block text-sm font-medium">Email, student ID, or name<input id="loginId" class="field mt-2" type="text" required placeholder="student@example.com"></label><label class="block text-sm font-medium">Password<input id="loginPassword" class="field mt-2" type="password" required="" placeholder="Enter password"></label><label class="flex items-center gap-2 text-sm text-[var(--color-muted)]"><input id="remember" type="checkbox" class="accent-[var(--color-primary)]"> Remember me</label><button class="gradient w-full rounded-xl py-3.5 font-bold text-white transition hover:scale-[1.01]">Continue&nbsp;</button></form>
+        <div class="mt-6 border-t border-white/10 pt-5 text-center">
+          <p class="text-sm text-[var(--color-muted)]">New student?</p>
+          <button id="showSignup" type="button" class="mt-2 font-bold text-[var(--color-primary)]">Create an account →</button>
+        </div>
+        <form id="signupForm" class="mt-8 hidden space-y-4">
+          <div>
+            <p class="text-sm font-bold text-[var(--color-primary)]">STUDENT SIGN UP</p>
+            <h3 class="mt-2 font-heading text-2xl font-bold">Create your account</h3>
+            <p class="mt-2 text-sm text-[var(--color-muted)]">Use your email address to sign in next time.</p>
+          </div>
+          <label class="block text-sm font-medium">Full name<input id="signupName" class="field mt-2" type="text" required maxlength="60" placeholder="Your full name"></label>
+          <label class="block text-sm font-medium">Email address<input id="signupEmail" class="field mt-2" type="email" required placeholder="you@example.com"></label>
+          <label class="block text-sm font-medium">Password<input id="signupPassword" class="field mt-2" type="password" required minlength="6" placeholder="At least 6 characters"></label>
+          <label class="block text-sm font-medium">Confirm password<input id="signupConfirm" class="field mt-2" type="password" required minlength="6" placeholder="Repeat your password"></label>
+          <button class="gradient w-full rounded-xl py-3.5 font-bold text-white transition hover:scale-[1.01]">Create account</button>
+          <button id="showSignin" type="button" class="w-full rounded-xl border border-white/10 py-3 text-sm font-semibold">Back to sign in</button>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <div id="app" class="hidden min-h-screen">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-white/10 bg-[var(--color-surface)] p-5 transition-transform md:translate-x-0">
+      <div class="flex items-center gap-3 px-2">
+        <button type="button" data-login-logo="" class="brand-mark h-11 w-11 overflow-hidden rounded-[var(--radius)]" aria-label="Return to login"><span aria-hidden="true">I</span></button>
+        <div><b class="font-heading">IQRA’ Portal</b>
+          <p class="text-xs text-[var(--color-muted)]">Workspace 2026</p>
+        </div>
+      </div>
+      <div class="my-8 rounded-2xl bg-[var(--color-primary)]/10 p-4">
+        <p class="text-xs uppercase tracking-widest text-[var(--color-muted)]">Signed in as</p>
+        <p id="accountName" class="mt-1 font-semibold"></p>
+        <p id="accountRole" class="text-xs text-[var(--color-primary)]"></p>
+      </div>
+      <nav id="nav" class="space-y-2"></nav>
+      <div class="mt-auto space-y-2"><button id="themeBtn" class="w-full rounded-xl px-4 py-3 text-left text-sm text-[var(--color-muted)] hover:bg-[var(--color-primary)]/10">◐ <span class="ml-2">Toggle appearance</span></button><button id="logoutBtn" class="w-full rounded-xl px-4 py-3 text-left text-sm text-red-400 hover:bg-red-500/10">↪ <span class="ml-2">Sign out</span></button></div>
+    </aside>
+    <div id="shade" class="fixed inset-0 z-30 hidden bg-black/60 md:hidden"></div>
+    <main class="min-h-screen md:ml-72">
+      <header class="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[var(--color-bg)]/85 px-5 py-4 backdrop-blur-xl sm:px-8"><button id="menuBtn" class="rounded-lg p-2 md:hidden">☰</button>
+        <div>
+          <p class="text-xs uppercase tracking-widest text-[var(--color-muted)]">Good day</p>
+          <p id="welcome" class="font-heading text-xl font-bold"></p>
+        </div>
+        <div class="flex items-center gap-3"><button id="topTheme" class="rounded-lg border border-white/10 px-3 py-2">◐</button>
+          <button type="button" data-login-logo="" class="brand-mark h-10 w-10 overflow-hidden rounded-[var(--radius)]" aria-label="Return to login"><span aria-hidden="true">I</span></button>
+        </div>
+      </header>
+      <div class="mx-auto max-w-[1500px] p-5 sm:p-8">
+        <div id="content" class="fade"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="modal" class="pointer-events-auto fixed inset-0 z-[10000] hidden items-center justify-center bg-black/65 p-4">
+    <div id="modalBody" class="glass w-full max-w-lg rounded-[var(--radius)] p-6 shadow-2xl"></div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const DATA = 'iqraPortalData2026',
+        SESSION = 'iqraPortalSession2026',
+        ADMINS = 'iqraPortalAdmins2026',
+        THEME = 'iqraPortalTheme2026';
+      const names = ['BASITH', 'HASEEF', 'AJMAL', 'FAHMIN', 'UMAIR', 'SHAMNAD', 'ANSHIF', 'DHARI', 'HASEEB', 'NAJIH', 'NIJAD', 'RAHEES', 'JAWHER', 'ANAS', 'ARSHAD', 'RAZI', 'SWALIH', 'VAHIB', 'FAJAS', 'FARHAN', 'FARZAN', 'HISHAM', 'NAZIL', 'RIHAN', 'RIYAN', 'SABITH', 'SHAHAL', 'SAHAL', 'SHAHAN', 'SHAMIL', 'ZIYAN', 'NIZAM', 'SHAMIZ', 'AFNAN'];
+      const initial = names.map((name, i) => ({
+        id: i + 1,
+        name,
+        score: 0,
+        attendance: 92,
+        photo: '',
+        password: '',
+        email: '',
+        firstLogin: true,
+        lastLogin: '',
+        history: [],
+        portfolioLink: ''
+      }));
+      const state = {
+        role: '',
+        user: null,
+        view: 'dashboard',
+        query: '',
+        page: 1
+      };
+      let students = [];
+      let admins = [];
+      let portalMessageTimer = null;
+      let portalMessageInitialized = false;
+      let portalKnownMessageIds = new Set();
+      const $ = id => document.getElementById(id);
+      const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+      } [char]));
+      const read = (key, fallback) => {
+        try {
+          return JSON.parse(localStorage.getItem(key)) ?? fallback;
+        } catch {
+          return fallback;
+        }
+      };
+      const save = () => {
+        localStorage.setItem(DATA, JSON.stringify(students));
+        window.iqraSupabase?.saveStudents(students).catch(() => {});
+      };
+      const updatePortalPresence = () => {
+        if (!state.user) return;
+        const isStudent = state.role === 'student';
+        const userId = isStudent ? `student:${state.user.id}` : `admin:${state.user.username || 'portal'}`;
+        const presence = read('iqraPortalPresence2026', {});
+        presence[userId] = {
+          userId,
+          studentId: isStudent ? state.user.id : '',
+          displayName: isStudent ? state.user.name : state.user.username || 'Portal Admin',
+          role: state.role,
+          isOnline: document.visibilityState === 'visible',
+          showOnlineStatus: isStudent ? state.user.show_online_status !== false : true,
+          lastSeen: Date.now()
+        };
+        localStorage.setItem('iqraPortalPresence2026', JSON.stringify(presence));
+        window.iqraSupabase?.saveChatPresence({
+          userId,
+          studentId: isStudent ? state.user.id : '',
+          displayName: isStudent ? state.user.name : state.user.username || 'Portal Admin',
+          role: state.role
+        }).catch(() => {});
+      };
+      const portalMessageToast = message => {
+        const sender = students.find(student => String(student.id) === String(message.from));
+        notify(`${sender?.name || `Student ID #${message.from}`} sent you a message`);
+      };
+      const checkPortalMessages = async () => {
+        if (!state.user || !window.iqraSupabase?.getChatMessages) return;
+        const identity = state.role === 'student' ? String(state.user.id) : 'admin';
+        try {
+          const rows = await window.iqraSupabase.getChatMessages(identity);
+          if (!Array.isArray(rows)) return;
+          const incoming = rows.filter(row => String(row.recipient_id) === identity && String(row.sender_id) !== identity);
+          const currentIds = new Set(incoming.map(row => String(row.id)));
+          if (!portalMessageInitialized) {
+            portalKnownMessageIds = currentIds;
+            portalMessageInitialized = true;
+            return;
+          }
+          const newMessage = incoming.find(row => !portalKnownMessageIds.has(String(row.id)));
+          portalKnownMessageIds = currentIds;
+          if (newMessage) portalMessageToast({ from: newMessage.sender_id });
+        } catch {
+          /* Keep the portal usable when message sync is unavailable. */
+        }
+      };
+      const saveAdmins = () => localStorage.setItem(ADMINS, JSON.stringify(admins));
+      const avatar = s => s.photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=7c3aed&color=fff&size=160`;
+      const hash = value => {
+        let h = 2166136261;
+        for (const char of String(value)) h = Math.imul(h ^ char.charCodeAt(0), 16777619);
+        return String(h >>> 0);
+      };
+      const defaultAdmin = {
+        username: 'admin@.iqra',
+        password: hash('admin@.iqra' + 'iqradmin')
+      };
+      const additionalAdmin = {
+        username: 'kmhaseeb887@gmail.com',
+        password: hash('kmhaseeb887@gmail.com' + 'alpha123')
+      };
+      const thirdAdmin = {
+        username: 'jashireee07@gmail.com',
+        password: hash('jashireee07@gmail.com' + 'jashireee07')
+      };
+      const notify = (message, error = false) => {
+        $('toast').textContent = (error ? '⚠ ' : '✓ ') + message;
+        $('toast').classList.remove('hidden');
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => $('toast').classList.add('hidden'), 2800);
+      };
+      const rank = s => [...students].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name)).findIndex(x => x.id === s.id) + 1;
+      const card = (label, value, icon) => `<div class="glass rounded-[var(--radius)] p-5 transition hover:-translate-y-1"><div class="mb-5 grid h-10 w-10 place-items-center rounded-xl bg-[var(--color-primary)]/15 text-xl text-[var(--color-primary)]">${icon}</div><p class="text-sm text-[var(--color-muted)]">${label}</p><p class="mt-1 font-heading text-3xl font-bold">${value}</p></div>`;
+      const download = (data, filename, type) => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([data], {
+          type
+        }));
+        link.download = filename;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(link.href), 500);
+      };
+
+      function studentRows(list, current) {
+        return list.map((s, i) => `<div class="flex items-center gap-3 border-t border-white/10 py-3 ${current?.id === s.id ? 'rounded-lg bg-[var(--color-primary)]/10 px-2' : ''}"><b class="w-8 text-center">${i < 3 ? ['🥇','🥈','🥉'][i] : '#' + (i + 1)}</b><img loading="lazy" src="${avatar(s)}" class="profile-photo h-9 w-9 rounded-full object-cover" alt=""><span class="flex-1 text-sm font-semibold">${esc(s.name)}${current?.id === s.id ? ' <small class="text-[var(--color-primary)]">You</small>' : ''}</span><b>${s.score}%</b></div>`).join('') || '<p class="py-10 text-center text-sm text-[var(--color-muted)]">No students found.</p>';
+      }
+
+      function dashboard() {
+        if (state.role === 'student') return studentDashboard();
+        const avg = students.length ? Math.round(students.reduce((a, s) => a + s.score, 0) / students.length) : 0;
+        const top = [...students].sort((a, b) => b.score - a.score)[0];
+        const recent = students.filter(s => s.lastLogin).slice(-5).reverse();
+        return `<div class="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p class="text-sm font-bold text-[var(--color-primary)]">OVERVIEW / 2026</p><h1 class="mt-2 font-heading text-4xl font-bold sm:text-5xl">Operate with confidence.</h1><p class="mt-3 text-[var(--color-muted)]">A live view of your class community.</p></div><button data-add class="gradient rounded-xl px-5 py-3 font-bold text-white">+ Add student</button></div><div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">${card('Total students', students.length, '♙')}${card('Average score', avg + '%', '✦')}${card('Attendance average', (students.length ? Math.round(students.reduce((a,s) => a + s.attendance, 0) / students.length) : 0) + '%', '◷')}${card('Top performer', top ? esc(top.name) : '—', '♛')}</div><div class="mt-6 grid gap-6 lg:grid-cols-2"><div class="glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">Top performers</h2><div class="mt-3">${studentRows([...students].sort((a,b) => b.score - a.score).slice(0, 8))}</div></div><div class="glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">Recent logins</h2><div class="mt-3 space-y-3">${recent.map(s => `<div class="flex items-center gap-3 border-t border-white/10 pt-3"><img src="${avatar(s)}" class="h-9 w-9 rounded-full" alt=""><span class="flex-1 text-sm font-semibold">${esc(s.name)}</span><span class="text-xs text-[var(--color-muted)]">${esc(s.lastLogin)}</span></div>`).join('') || '<p class="py-10 text-center text-sm text-[var(--color-muted)]">No login activity yet.</p>'}</div></div></div>`;
+      }
+
+      function studentDashboard() {
+        const s = state.user;
+        return `<div class="mb-8"><p class="text-sm font-bold text-[var(--color-primary)]">PERSONAL SPACE / 2026</p><h1 class="mt-2 font-heading text-4xl font-bold sm:text-5xl">Keep your momentum.</h1><p class="mt-3 text-[var(--color-muted)]">Your progress, all in one place.</p></div><div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">${card('My score', s.score + '%', '✦')}${card('Class rank', '#' + rank(s), '♛')}${card('Attendance', s.attendance + '%', '◷')}${card('Recent logins', (s.history || []).length, '◉')}</div><div class="mt-6 grid gap-6 lg:grid-cols-2"><div class="glass rounded-[var(--radius)] p-6"><div class="flex items-center gap-4"><img src="${avatar(s)}" class="profile-photo h-20 w-20 rounded-2xl object-cover" alt="${esc(s.name)}"><div><h2 class="font-heading text-2xl font-bold">${esc(s.name)}</h2><p class="text-sm text-[var(--color-muted)]">Student ID #${s.id}</p></div></div><div class="mt-7 rounded-xl bg-[var(--color-primary)]/10 p-4"><p class="text-sm text-[var(--color-muted)]">Progress</p><div class="mt-3 h-2 rounded-full bg-black/10"><div class="gradient h-2 rounded-full" style="width:${Math.min(100, s.score)}%"></div></div><p class="mt-2 text-sm">${s.score}% complete</p></div><button data-profile class="mt-5 rounded-xl bg-[var(--color-primary)]/10 px-4 py-3 text-sm font-bold text-[var(--color-primary)]">Edit profile</button></div><div class="glass rounded-[var(--radius)] p-6"><div class="flex items-center justify-between"><h2 class="font-heading text-xl font-bold">Class leaderboard</h2><button data-view="leaderboard" class="text-sm font-bold text-[var(--color-primary)]">View all →</button></div><div class="mt-3">${studentRows([...students].sort((a,b) => b.score - a.score).slice(0, 8), s)}</div></div></div>`;
+      }
+
+      function studentsView() {
+        const q = state.query.toLowerCase();
+        let list = students.filter(s => s.name.toLowerCase().includes(q) || String(s.id).includes(q));
+        list.sort((a, b) => state.sort === 'score' ? b.score - a.score : a.name.localeCompare(b.name));
+        const pages = Math.max(1, Math.ceil(list.length / 8));
+        list = list.slice((state.page - 1) * 8, state.page * 8);
+        return `<div class="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p class="text-sm font-bold text-[var(--color-primary)]">DIRECTORY</p><h1 class="mt-2 font-heading text-4xl font-bold">Students</h1></div><button data-add class="gradient rounded-xl px-5 py-3 font-bold text-white">+ Add student</button></div><div class="glass overflow-hidden rounded-[var(--radius)]"><div class="flex flex-col gap-3 border-b border-white/10 p-5 sm:flex-row"><input id="search" value="${esc(state.query)}" class="field flex-1" placeholder="Search name or ID…"><select id="sort" class="field sm:w-48"><option value="name" ${state.sort !== 'score' ? 'selected' : ''}>Sort by name</option><option value="score" ${state.sort === 'score' ? 'selected' : ''}>Sort by score</option></select></div><div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left"><thead class="bg-[var(--color-primary)]/5 text-xs uppercase text-[var(--color-muted)]"><tr><th class="p-4">Student</th><th>Score</th><th>Attendance</th><th>Last login</th><th class="pr-4 text-right">Actions</th></tr></thead><tbody>${list.map(s => `<tr class="border-t border-white/10"><td class="p-4"><div class="flex items-center gap-3"><img loading="lazy" src="${avatar(s)}" class="profile-photo h-10 w-10 rounded-xl object-cover" alt=""><div><b>${esc(s.name)}</b><p class="text-xs text-[var(--color-muted)]">ID #${s.id}</p></div></div></td><td>${s.score}%</td><td>${s.attendance}%</td><td class="text-sm text-[var(--color-muted)]">${esc(s.lastLogin || 'Never')}</td><td class="pr-4 text-right"><button data-edit="${s.id}" class="mr-2 rounded-lg bg-[var(--color-primary)]/10 px-3 py-2 text-xs font-bold text-[var(--color-primary)]">Manage</button><button data-delete="${s.id}" class="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-400">Delete</button></td></tr>`).join('') || '<tr><td colspan="5" class="p-16 text-center text-[var(--color-muted)]">No students match your search.</td></tr>'}</tbody></table></div><div class="flex items-center justify-between border-t border-white/10 p-4 text-sm text-[var(--color-muted)]"><span>Page ${state.page} of ${pages}</span><div class="flex gap-2"><button data-page="-1" class="rounded-lg border border-white/10 px-3 py-2">←</button><button data-page="1" class="rounded-lg border border-white/10 px-3 py-2">→</button></div></div></div>`;
+      }
+
+      function adminSettings() {
+        return `<div class="mb-7"><p class="text-sm font-bold text-[var(--color-primary)]">ADMINISTRATION</p><h1 class="mt-2 font-heading text-4xl font-bold">Admin settings</h1><p class="mt-2 text-[var(--color-muted)]">Manage your username, password, and class portal administrators.</p></div><div class="grid gap-6 lg:grid-cols-2"><div class="glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">My account</h2><form id="adminAccountForm" class="mt-5 space-y-3"><label class="block text-sm">Username<input id="adminUsername" class="field mt-2" type="text" required value="${esc(state.user.username)}"></label><label class="block text-sm">Current password<input id="adminCurrentPassword" class="field mt-2" type="password" required placeholder="Current password"></label><label class="block text-sm">New password<input id="adminNewPassword" class="field mt-2" type="password" required minlength="6" placeholder="At least 6 characters"></label><button class="gradient w-full rounded-xl py-3 font-bold text-white">Save account</button></form></div><div class="glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">Add administrator</h2><form id="newAdminForm" class="mt-5 space-y-3"><label class="block text-sm">Username<input id="newAdminUsername" class="field mt-2" type="text" required placeholder="New admin username"></label><label class="block text-sm">Password<input id="newAdminPassword" class="field mt-2" type="password" required minlength="6" placeholder="At least 6 characters"></label><button class="gradient w-full rounded-xl py-3 font-bold text-white">Add administrator</button></form><div class="mt-6 border-t border-white/10 pt-5"><h3 class="font-semibold">Administrators</h3><div class="mt-3 space-y-2">${admins.map(a => `<div class="flex items-center justify-between rounded-xl bg-[var(--color-primary)]/10 px-4 py-3 text-sm"><span>${esc(a.username)}</span>${a.username !== state.user.username ? `<button data-remove-admin="${esc(a.username)}" class="text-red-400">Remove</button>` : '<span class="text-xs text-[var(--color-muted)]">You</span>'}</div>`).join('')}</div></div></div></div>`;
+      }
+
+      function leaderboard() {
+        return `<div class="mb-7"><p class="text-sm font-bold text-[var(--color-primary)]">COMMUNITY</p><h1 class="mt-2 font-heading text-4xl font-bold">Leaderboard</h1><p class="mt-2 text-[var(--color-muted)]">Live class ranking and progress.</p></div><div class="glass rounded-[var(--radius)] p-6">${studentRows([...students].sort((a,b) => b.score - a.score), state.role === 'student' ? state.user : null)}</div>`;
+      }
+
+      function adminSuggestions() {
+        return `<div class="mb-7"><p class="text-sm font-bold text-[var(--color-primary)]">COMMUNITY VOICE</p><h1 class="mt-2 font-heading text-4xl font-bold">Suggestions</h1><p class="mt-2 text-[var(--color-muted)]">Review ideas, feedback, and issue reports shared by students.</p></div><div id="adminSuggestionsList" class="glass rounded-[var(--radius)] p-6"><div class="flex items-center gap-3 text-[var(--color-muted)]"><span class="spinner">◌</span> Loading suggestions...</div></div>`;
+      }
+
+      function festView() {
+        const activities = [
+          ['09:00 AM', 'Opening ceremony', 'Welcome, class introductions, and the fest launch.', '✦'],
+          ['10:00 AM', 'Knowledge quiz', 'Teams compete across culture, science, and current topics.', '◈'],
+          ['11:30 AM', 'Creative showcase', 'Poetry, speeches, artwork, and student performances.', '✿'],
+          ['01:30 PM', 'Team games', 'A friendly afternoon of challenges and collaboration.', '♛']
+        ];
+        return `<div class="mb-8 flex flex-wrap items-end justify-between gap-5"><div><p class="text-sm font-bold text-[var(--color-primary)]">CLASS COMMUNITY / 2026</p><h1 class="mt-2 font-heading text-4xl font-bold sm:text-5xl">Class Fest</h1><p class="mt-3 max-w-2xl text-[var(--color-muted)]">A day to celebrate creativity, teamwork, and the talents in our class.</p></div><div class="rounded-2xl bg-[var(--color-primary)]/10 px-5 py-3 text-sm"><span class="text-[var(--color-muted)]">Event date</span><b class="ml-2 text-[var(--color-primary)]">20 April 2026</b></div></div><div class="overflow-hidden rounded-[var(--radius)] gradient p-6 text-white shadow-xl sm:p-8"><div class="max-w-2xl"><p class="text-sm font-bold uppercase tracking-[.2em] text-white/70">Together we shine</p><h2 class="mt-3 font-heading text-3xl font-bold sm:text-4xl">Bring your best ideas to the stage.</h2><p class="mt-3 max-w-xl text-white/80">Join an exciting day of learning, performance, and friendly competition with your classmates.</p><button data-fest-register class="mt-6 rounded-xl bg-white px-5 py-3 font-bold text-[var(--color-primary-contrast)] transition hover:-translate-y-0.5">${state.role === 'student' ? 'Register for an activity' : 'Share with the class'} →</button></div></div><div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">${activities.map(([time, title, description, icon]) => `<article class="glass rounded-[var(--radius)] p-5"><div class="grid h-11 w-11 place-items-center rounded-xl bg-[var(--color-primary)]/15 text-2xl text-[var(--color-primary)]">${icon}</div><p class="mt-5 text-xs font-bold uppercase tracking-widest text-[var(--color-primary)]">${time}</p><h3 class="mt-2 font-heading text-xl font-bold">${title}</h3><p class="mt-2 text-sm leading-6 text-[var(--color-muted)]">${description}</p></article>`).join('')}</div><div class="mt-6 glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">Fest notes</h2><div class="mt-4 grid gap-3 text-sm text-[var(--color-muted)] sm:grid-cols-3"><p class="rounded-xl bg-[var(--color-primary)]/10 p-4">Bring your student ID and arrive 15 minutes early.</p><p class="rounded-xl bg-[var(--color-primary)]/10 p-4">Teams will be announced during the opening ceremony.</p><p class="rounded-xl bg-[var(--color-primary)]/10 p-4">Celebrate every participant and keep the day inclusive.</p></div></div>`;
+      }
+
+      function profile() {
+        const s = state.user;
+        return `<div class="mb-7"><p class="text-sm font-bold text-[var(--color-primary)]">ACCOUNT</p><h1 class="mt-2 font-heading text-4xl font-bold">My profile</h1></div><div class="grid gap-6 lg:grid-cols-2"><div class="glass rounded-[var(--radius)] p-6"><div class="flex items-center gap-4"><img src="${avatar(s)}" class="profile-photo h-20 w-20 rounded-2xl object-cover" alt=""><div><h2 class="font-heading text-2xl font-bold">${esc(s.name)}</h2><p class="text-sm text-[var(--color-muted)]">Student ID #${s.id}</p></div></div><form id="photoForm" class="mt-7 space-y-3"><label class="text-sm">Profile photo URL<input id="photo" type="url" class="field mt-2" value="${esc(s.photo || '')}" placeholder="https://…"></label>          <label class="text-sm">Portfolio link<input id="portfolioLink" type="url" class="field mt-2" value="${esc(s.portfolioLink || '')}" placeholder="https://your-portfolio-link.example"></label><label class="flex items-center gap-3 rounded-xl bg-[var(--color-primary)]/10 p-4 text-sm"><input id="showOnlineStatus" type="checkbox" class="accent-[var(--color-primary)]" ${s.show_online_status !== false ? 'checked' : ''}><span><b class="block">Privacy · Show Online Status</b><small class="text-[var(--color-muted)]">Let other users see when you are online or last seen.</small></span></label><p class="text-xs text-[var(--color-muted)]">Use a complete link beginning with http:// or https://.</p><button class="gradient rounded-xl px-4 py-3 font-bold text-white">Save profile</button></form></div><div class="glass rounded-[var(--radius)] p-6"><h2 class="font-heading text-xl font-bold">Change password</h2><form id="passwordForm" class="mt-5 space-y-3"><input id="oldPassword" type="password" class="field" required placeholder="Current password"><input id="newPassword" type="password" class="field" required placeholder="New password"><div class="h-2 rounded-full bg-black/10"><div id="strength" class="gradient h-full w-0 rounded-full transition-all"></div></div><input id="confirmPassword" type="password" class="field" required placeholder="Confirm new password"><button class="gradient w-full rounded-xl py-3 font-bold text-white">Update password</button></form></div></div>`;
+      }
+
+      function render() {
+        $('content').innerHTML = state.view === 'dashboard' ? dashboard() : state.view === 'students' ? studentsView() : state.view === 'leaderboard' ? leaderboard() : state.view === 'fest' ? festView() : state.view === 'settings' ? adminSettings() : state.view === 'suggestions' && state.role === 'admin' ? adminSuggestions() : profile();
+        bind();
+        if (state.view === 'suggestions' && state.role === 'admin') loadAdminSuggestions();
+      }
+
+      function layout() {
+        $('accountName').textContent = state.role === 'admin' ? state.user.username : state.user.name;
+        $('accountRole').textContent = state.role === 'admin' ? 'Full access' : 'Student account';
+        $('welcome').textContent = state.role === 'admin' ? 'Your class at a glance' : `Welcome back, ${state.user.name}`;
+        const links = state.role === 'admin' ? [
+          ['dashboard', '⌂', 'Overview'],
+          ['students', '♙', 'Students'],
+          ['portfolio', '▦', 'Portfolios'],
+          ['settings', '⚙', 'Admin settings'],
+          ['message', '✉', 'Messages'],
+          ['suggestions', '✦', 'Suggestions']
+        ] : [
+          ['dashboard', '⌂', 'My dashboard'],
+          ['leaderboard', '♛', 'Leaderboard'],
+          ['portfolio', '▦', 'Portfolios'],
+          ['profile', '◉', 'My profile'],
+          ['message', '✉', 'Messages'],
+          ['suggestions', '✦', 'Suggestion box']
+        ];
+        $('nav').innerHTML = links.map(x => `<button data-view="${x[0]}" class="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-[var(--color-muted)] hover:bg-[var(--color-primary)]/10 ${state.view === x[0] ? 'active' : ''}">${x[1]}<span class="ml-3">${x[2]}</span></button>`).join('');
+        render();
+      }
+
+      function themeEditor() {
+        if (state.role !== 'admin' || state.view !== 'settings') return;
+        const panel = document.createElement('div');
+        panel.className = 'glass rounded-[var(--radius)] p-6 mt-6';
+        panel.innerHTML = `<div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-sm font-bold text-[var(--color-primary)]">PORTAL APPEARANCE</p><h2 class="mt-2 font-heading text-xl font-bold">Customize theme</h2><p class="mt-2 text-sm text-[var(--color-muted)]">Update the portal colors without changing the layout.</p></div><button id="resetTheme" type="button" class="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold">Reset</button></div><form id="themeForm" class="mt-6 grid gap-4 sm:grid-cols-2"><label class="flex items-center justify-between gap-4 rounded-xl bg-[var(--color-primary)]/10 p-4 text-sm font-semibold">Primary color<input id="themePrimary" type="color" value="${getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#38bdf8'}" class="h-10 w-14 cursor-pointer rounded-lg border-0 bg-transparent"></label><label class="flex items-center justify-between gap-4 rounded-xl bg-[var(--color-primary)]/10 p-4 text-sm font-semibold">Background<input id="themeBg" type="color" value="${getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#080817'}" class="h-10 w-14 cursor-pointer rounded-lg border-0 bg-transparent"></label><label class="flex items-center justify-between gap-4 rounded-xl bg-[var(--color-primary)]/10 p-4 text-sm font-semibold">Surface<input id="themeSurface" type="color" value="${getComputedStyle(document.documentElement).getPropertyValue('--color-surface').trim() || '#111827'}" class="h-10 w-14 cursor-pointer rounded-lg border-0 bg-transparent"></label><label class="flex items-center justify-between gap-4 rounded-xl bg-[var(--color-primary)]/10 p-4 text-sm font-semibold">Text<input id="themeText" type="color" value="${getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim() || '#f9fafb'}" class="h-10 w-14 cursor-pointer rounded-lg border-0 bg-transparent"></label><button class="gradient sm:col-span-2 rounded-xl py-3 font-bold text-white">Save theme</button></form>`;
+        $('content').appendChild(panel);
+        $('themeForm').onsubmit = e => {
+          e.preventDefault();
+          const root = document.documentElement;
+          root.style.setProperty('--color-primary', $('themePrimary').value);
+          root.style.setProperty('--color-bg', $('themeBg').value);
+          root.style.setProperty('--color-surface', $('themeSurface').value);
+          root.style.setProperty('--color-text', $('themeText').value);
+          localStorage.setItem('iqraPortalCustomTheme2026', JSON.stringify({
+            primary: $('themePrimary').value,
+            bg: $('themeBg').value,
+            surface: $('themeSurface').value,
+            text: $('themeText').value
+          }));
+          notify('Portal theme saved');
+          layout();
+        };
+        $('resetTheme').onclick = () => {
+          localStorage.removeItem('iqraPortalCustomTheme2026');
+          document.documentElement.style.removeProperty('--color-primary');
+          document.documentElement.style.removeProperty('--color-bg');
+          document.documentElement.style.removeProperty('--color-surface');
+          document.documentElement.style.removeProperty('--color-text');
+          notify('Portal theme reset');
+          layout();
+        };
+      }
+
+      async function loadAdminSuggestions() {
+        const target = $('adminSuggestionsList');
+        if (!target) return;
+        let items = [];
+        try {
+          items = await window.iqraSupabase?.getSuggestions() || [];
+        } catch {
+          try {
+            items = JSON.parse(localStorage.getItem('iqraPortalSuggestions2026')) || [];
+          } catch {
+            items = [];
+          }
+        }
+        if (!Array.isArray(items)) items = [];
+        items = [...items].reverse().map(item => ({
+          ...item,
+          id: item.id ?? item.created_at ?? item.createdAt ?? item.message,
+          deleteKey: item.id ?? item.created_at ?? item.createdAt ?? item.message
+        }));
+        target.innerHTML = items.length ? `<div class="space-y-4">${items.map(item => `<article class="rounded-2xl border border-white/10 bg-[var(--color-primary)]/5 p-5"><div class="flex flex-wrap items-center justify-between gap-3"><div><span class="rounded-full bg-[var(--color-primary)]/15 px-3 py-1 text-xs font-bold text-[var(--color-primary)]">${esc(item.category)}</span><span class="ml-2 text-sm font-semibold">${esc(item.name || 'Anonymous student')}</span></div><div class="flex items-center gap-3"><time class="text-xs text-[var(--color-muted)]">${esc(item.created_at ? new Date(item.created_at).toLocaleString() : item.createdAt || '')}</time>${item.deleteKey !== undefined && item.deleteKey !== null ? `<button type="button" data-remove-suggestion="${esc(item.deleteKey)}" data-remove-message="${esc(item.message)}" class="rounded-lg bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-400 transition hover:bg-red-500/20">Remove</button>` : ''}</div></div><p class="mt-4 leading-7">${esc(item.message)}</p>${item.email ? `<p class="mt-3 text-xs text-[var(--color-muted)]"><i class="fa-regular fa-envelope"></i> ${esc(item.email)}</p>` : ''}</article>`).join('')}</div>` : '<p class="py-12 text-center text-[var(--color-muted)]">No suggestions have been submitted yet.</p>';
+        target.querySelectorAll('[data-remove-suggestion]').forEach(button => {
+          button.onclick = () => removeSuggestion(button.dataset.removeSuggestion, button.dataset.removeMessage || '');
+        });
+      }
+
+      async function removeSuggestion(id, message = '') {
+        if (state.role !== 'admin' || id === undefined || id === null || id === '') return;
+        if (!confirm('Remove this suggestion permanently?')) return;
+
+        const button = document.querySelector(`[data-remove-suggestion="${CSS.escape(String(id))}"]`);
+        if (button) {
+          button.disabled = true;
+          button.textContent = 'Removing...';
+        }
+
+        let cloudRemoved = false;
+        try {
+          if (window.iqraSupabase?.deleteSuggestion) {
+            await window.iqraSupabase.deleteSuggestion(id);
+            cloudRemoved = true;
+          }
+        } catch (error) {
+          console.warn('Could not remove cloud suggestion:', error);
+        }
+
+        try {
+          const localItems = JSON.parse(localStorage.getItem('iqraPortalSuggestions2026')) || [];
+          const filtered = localItems.filter(item => {
+            const itemId = item.id ?? item.created_at ?? item.createdAt;
+            const sameId = String(itemId) === String(id);
+            const sameMessage = message && String(item.message || '').trim() === String(message).trim();
+            return !sameId && !sameMessage;
+          });
+          localStorage.setItem('iqraPortalSuggestions2026', JSON.stringify(filtered));
+        } catch (error) {
+          console.warn('Could not update local suggestions:', error);
+        }
+
+        notify(cloudRemoved ? 'Suggestion removed' : 'Suggestion removed locally');
+        await loadAdminSuggestions();
+      }
+
+      function bind() {
+        document.querySelectorAll('[data-remove-suggestion]').forEach(button => {
+          button.onclick = () => removeSuggestion(button.dataset.removeSuggestion, button.dataset.removeMessage || '');
+        });
+        document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
+          if (b.dataset.view === 'portfolio') {
+            window.location.href = '/portfolio';
+            return;
+          }
+          if (b.dataset.view === 'message') {
+            window.location.href = '/message';
+            return;
+          }
+          if (b.dataset.view === 'suggestions' && state.role === 'student') {
+            window.location.href = '/suggestions';
+            return;
+          }
+          if (b.dataset.view === 'portfolio') {
+            window.location.href = '/portfolio';
+            return;
+          }
+          state.view = b.dataset.view;
+          state.page = 1;
+          closeNav();
+          layout();
+        });
+        document.querySelectorAll('[data-add]').forEach(b => b.onclick = () => studentModal());
+        document.querySelectorAll('[data-fest-register]').forEach(b => b.onclick = () => {
+          window.location.href = '/portfolio';
+        });
+        document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => studentModal(Number(b.dataset.edit)));
+        document.querySelectorAll('[data-delete]').forEach(b => b.onclick = async () => {
+          if (!confirm('Delete this student permanently?')) return;
+          const studentId = Number(b.dataset.delete);
+          students = students.filter(s => s.id !== studentId);
+          try {
+            const storedMessages = JSON.parse(localStorage.getItem('iqraPortalMessages2026')) || [];
+            localStorage.setItem('iqraPortalMessages2026', JSON.stringify(storedMessages.filter(message => String(message.studentId) !== String(studentId) && String(message.from) !== String(studentId) && String(message.to) !== String(studentId))));
+          } catch {
+            /* Student removal still completes if old chat data cannot be read. */
+          }
+          save();
+          try {
+            await window.iqraSupabase?.deleteStudent(studentId);
+          } catch {
+            /* The student is removed locally even when cloud sync is unavailable. */
+          }
+          notify('Student and recent login removed');
+          render();
+        });
+        document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => {
+          state.page = Math.max(1, state.page + Number(b.dataset.page));
+          render();
+        });
+        const search = $('search');
+        if (search) search.oninput = e => {
+          state.query = e.target.value;
+          state.page = 1;
+          render();
+          setTimeout(() => {
+            const field = $('search');
+            if (field) {
+              field.focus();
+              field.setSelectionRange(field.value.length, field.value.length);
+            }
+          }, 0);
+        };
+        const sort = $('sort');
+        if (sort) sort.onchange = e => {
+          state.sort = e.target.value;
+          render();
+        };
+        const pf = $('passwordForm');
+        if (pf) pf.onsubmit = changePassword;
+        const adminAccountForm = $('adminAccountForm');
+        if (adminAccountForm) adminAccountForm.onsubmit = saveAdminAccount;
+        const newAdminForm = $('newAdminForm');
+        if (newAdminForm) newAdminForm.onsubmit = addAdmin;
+        document.querySelectorAll('[data-remove-admin]').forEach(button => button.onclick = () => removeAdmin(button.dataset.removeAdmin));
+        const photo = $('photoForm');
+        if (photo) photo.onsubmit = e => {
+          e.preventDefault();
+          const portfolioLink = $('portfolioLink').value.trim();
+          if (portfolioLink && !/^https?:\/\//i.test(portfolioLink)) {
+            return notify('Portfolio link must start with http:// or https://', true);
+          }
+          state.user.photo = $('photo').value.trim();
+          state.user.portfolioLink = portfolioLink;
+          state.user.show_online_status = $('showOnlineStatus').checked;
+          save();
+          notify('Profile and portfolio link updated');
+          render();
+        };
+        const newer = $('newPassword');
+        if (newer) newer.oninput = e => $('strength').style.width = Math.min(100, e.target.value.length * 14) + '%';
+        document.querySelectorAll('[data-pdf]').forEach(b => b.onclick = () => makePdf(b.dataset.pdf, state.user));
+        themeEditor();
+      }
+
+      function studentModal(id) {
+        const old = id ? students.find(s => s.id === id) : null;
+        $('modalBody').innerHTML = `<h2 class="font-heading text-2xl font-bold">${old ? 'Manage student' : 'Add student'}</h2><form id="studentForm" class="mt-5 space-y-3"><input id="studentId" class="field" type="number" min="1" required value="${old?.id || ''}" placeholder="Student ID"><input id="studentName" class="field" maxlength="60" required value="${esc(old?.name || '')}" placeholder="Full name"><input id="studentEmail" class="field" type="email" value="${esc(old?.email || '')}" placeholder="Student email address"><input id="studentScore" class="field" type="number" min="0" max="100" required value="${old?.score ?? 0}" placeholder="Score"><input id="studentAttendance" class="field" type="number" min="0" max="100" required value="${old?.attendance ?? 92}" placeholder="Attendance %"><input id="studentPhoto" class="field" type="url" value="${esc(old?.photo || '')}" placeholder="Photo URL"><input id="studentPortfolioLink" class="field" type="url" value="${esc(old?.portfolioLink || '')}" placeholder="Portfolio link"><div class="flex gap-3 pt-3"><button type="button" data-close class="flex-1 rounded-xl border border-white/10 py-3">Cancel</button><button class="gradient flex-1 rounded-xl py-3 font-bold text-white">Save</button></div>${old ? '<button type="button" id="resetPassword" class="w-full rounded-xl bg-orange-500/10 py-3 text-sm text-orange-400">Reset password to 123</button>' : ''}</form>`;
+        $('modal').classList.remove('hidden');
+        $('modal').classList.add('flex');
+        $('studentName').focus();
+        $('studentForm').onsubmit = e => {
+          e.preventDefault();
+          const sid = Number($('studentId').value);
+          const duplicate = students.find(s => s.id === sid && s.id !== old?.id);
+          if (duplicate) return notify('Student ID already exists', true);
+          const data = {
+            id: sid,
+            name: $('studentName').value.trim(),
+            score: Number($('studentScore').value),
+            attendance: Number($('studentAttendance').value),
+            photo: $('studentPhoto').value.trim(),
+            password: old?.password || '',
+            email: $('studentEmail').value.trim().toLowerCase(),
+            firstLogin: old?.firstLogin ?? true,
+            lastLogin: old?.lastLogin || '',
+            history: old?.history || [],
+            portfolioLink: old?.portfolioLink || ''
+          };
+          if (old) Object.assign(old, data);
+          else students.push(data);
+          save();
+          closeModal();
+          notify('Student saved');
+          render();
+        };
+        $('resetPassword')?.addEventListener('click', () => {
+          old.password = '';
+          old.firstLogin = true;
+          save();
+          notify('Password reset to 123');
+        });
+        document.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal);
+      }
+
+      function closeModal() {
+        $('modal').classList.add('hidden');
+        $('modal').classList.remove('flex');
+      }
+
+      function saveAdminAccount(e) {
+        e.preventDefault();
+        const current = $('adminCurrentPassword').value;
+        const nextUsername = $('adminUsername').value.trim();
+        const nextPassword = $('adminNewPassword').value;
+        const currentAdmin = admins.find(a => a.username === state.user.username);
+        if (!currentAdmin || hash(currentAdmin.username + current) !== currentAdmin.password) return notify('Current password is incorrect', true);
+        if (nextPassword.length < 6) return notify('Use at least 6 characters', true);
+        if (!nextUsername) return notify('Username is required', true);
+        if (admins.some(a => a.username === nextUsername && a !== currentAdmin)) return notify('Username already exists', true);
+        currentAdmin.username = nextUsername;
+        currentAdmin.password = hash(nextUsername + nextPassword);
+        state.user = currentAdmin;
+        saveAdmins();
+        layout();
+        notify('Admin account updated');
+      }
+
+      function addAdmin(e) {
+        e.preventDefault();
+        const username = $('newAdminUsername').value.trim();
+        const password = $('newAdminPassword').value;
+        if (password.length < 6) return notify('Use at least 6 characters', true);
+        if (admins.some(a => a.username === username)) return notify('Username already exists', true);
+        admins.push({ username, password: hash(username + password) });
+        saveAdmins();
+        e.target.reset();
+        render();
+        notify('Administrator added');
+      }
+
+      function removeAdmin(username) {
+        if (username === state.user.username) return notify('You cannot remove your own account', true);
+        if (!confirm('Remove this administrator?')) return;
+        admins = admins.filter(a => a.username !== username);
+        saveAdmins();
+        render();
+        notify('Administrator removed');
+      }
+
+      function changePassword(e) {
+        e.preventDefault();
+        const next = $('newPassword').value;
+        if ((state.user.firstLogin ? $('oldPassword').value !== '123' : hash(state.user.id + $('oldPassword').value) !== state.user.password) || (!state.user.password && $('oldPassword').value !== '123')) return notify('Current password is incorrect', true);
+        if (next.length < 6) return notify('Use at least 6 characters', true);
+        if (next !== $('confirmPassword').value) return notify('Passwords do not match', true);
+        state.user.password = hash(state.user.id + next);
+        state.user.firstLogin = false;
+        save();
+        e.target.reset();
+        $('strength').style.width = '0';
+        notify('Password updated successfully');
+      }
+
+      function makePdf(type, s) {
+        if (!s || !window.jspdf) return notify('PDF service is unavailable', true);
+        const {
+          jsPDF
+        } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFillColor(124, 58, 237);
+        doc.rect(0, 0, 210, 30, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.text('IQRA’ ACADEMY', 105, 19, {
+          align: 'center'
+        });
+        doc.setTextColor(30, 35, 50);
+        doc.setFontSize(17);
+        doc.text(type === 'report' ? 'Official Report Card' : type === 'attendance' ? 'Attendance Certificate' : type === 'id' ? 'Student ID Card' : 'Student Profile', 105, 48, {
+          align: 'center'
+        });
+        doc.line(20, 55, 190, 55);
+        const lines = [
+          ['Student name', s.name],
+          ['Student ID', '#' + s.id],
+          ['Score', s.score + '%'],
+          ['Class rank', '#' + rank(s)],
+          ['Attendance', s.attendance + '%'],
+          ['Teacher', 'Jashir Hudawi'],
+          ['Date', new Date().toLocaleDateString()]
+        ];
+        lines.forEach((x, i) => {
+          doc.setFont('helvetica', 'bold');
+          doc.text(x[0] + ':', 28, 78 + i * 14);
+          doc.setFont('helvetica', 'normal');
+          doc.text(String(x[1]), 88, 78 + i * 14);
+        });
+        doc.text('Class teacher signature: ____________________', 28, 205);
+        doc.text('Class coordinator signature: ____________________', 28, 225);
+        doc.setFontSize(9);
+        doc.text('Verification ID: IQRA-' + s.id + '-' + s.score, 28, 250);
+        doc.save(`IQRA_${type}_${s.name}.pdf`);
+        notify('PDF download started');
+      }
+
+      function openApp(role, user) {
+        state.role = role;
+        state.user = user;
+        $('login').classList.add('hidden');
+        $('app').classList.remove('hidden');
+        layout();
+        updatePortalPresence();
+        checkPortalMessages();
+        clearInterval(window.portalPresenceTimer);
+        clearInterval(portalMessageTimer);
+        window.portalPresenceTimer = setInterval(updatePortalPresence, 1000);
+        portalMessageTimer = setInterval(checkPortalMessages, 1000);
+      }
+
+      function closeNav() {
+        $('sidebar').classList.remove('translate-x-0');
+        $('sidebar').classList.add('-translate-x-full');
+        $('shade').classList.add('hidden');
+      }
+      const showSignUp = () => {
+        $('loginForm').classList.add('hidden');
+        $('showSignup').parentElement.classList.add('hidden');
+        $('signupForm').classList.remove('hidden');
+        $('signupName').focus();
+      };
+
+      const showSignIn = () => {
+        $('signupForm').classList.add('hidden');
+        $('loginForm').classList.remove('hidden');
+        $('showSignup').parentElement.classList.remove('hidden');
+        $('loginId').focus();
+      };
+
+      $('showSignup').onclick = showSignUp;
+      $('showSignin').onclick = showSignIn;
+      $('signupForm').onsubmit = e => {
+        e.preventDefault();
+        const name = $('signupName').value.trim().replace(/\\s+/g, ' ');
+        const email = $('signupEmail').value.trim().toLowerCase();
+        const password = $('signupPassword').value;
+        const confirmPassword = $('signupConfirm').value;
+        if (password.length < 6) return notify('Use at least 6 characters', true);
+        if (password !== confirmPassword) return notify('Passwords do not match', true);
+        if (students.some(student => student.email && student.email.toLowerCase() === email)) return notify('An account with this email already exists', true);
+        const student = {
+          id: students.length ? Math.max(...students.map(item => Number(item.id) || 0)) + 1 : 1,
+          name,
+          score: 0,
+          attendance: 92,
+          photo: '',
+          password: hash(0 + password),
+          email,
+          firstLogin: false,
+          lastLogin: new Date().toLocaleString(),
+          history: [new Date().toLocaleString()]
+        };
+        student.password = hash(student.id + password);
+        students.push(student);
+        save();
+        localStorage.setItem(SESSION, JSON.stringify({
+          role: 'student',
+          id: student.id
+        }));
+        openApp('student', student);
+        notify('Account created successfully');
+      };
+
+      $('loginForm').onsubmit = e => {
+        e.preventDefault();
+        const id = $('loginId').value.trim();
+        const pass = $('loginPassword').value;
+        const normalizedId = id.toLowerCase().replace(/\s+/g, ' ').trim();
+        let admin = admins.find(a => a.username.toLowerCase() === normalizedId && hash(a.username + pass) === a.password);
+        if (!admin && normalizedId === 'admin@.iqra' && pass === 'iqradmin') {
+          admin = defaultAdmin;
+          if (!admins.some(a => a.username.toLowerCase() === 'admin@.iqra')) {
+            admins.unshift(defaultAdmin);
+            saveAdmins();
+          }
+        }
+        if (admin) {
+          localStorage.setItem(SESSION, JSON.stringify({
+            role: 'admin',
+            username: admin.username
+          }));
+          return openApp('admin', admin);
+        }
+        const s = students.find(x => String(x.id) === id || (x.email && x.email.toLowerCase() === normalizedId) || x.name.toLowerCase().replace(/\s+/g, ' ').trim() === normalizedId);
+        if (!s) return notify('Account not found', true);
+        const valid = (!s.password && pass === '123') || hash(s.id + pass) === s.password;
+        if (!valid) return notify('Incorrect password', true);
+        s.lastLogin = new Date().toLocaleString();
+        s.history = [...(s.history || []), s.lastLogin].slice(-10);
+        save();
+        localStorage.setItem(SESSION, JSON.stringify({
+          role: 'student',
+          id: s.id
+        }));
+        openApp('student', s);
+        notify('Welcome to your workspace');
+      };
+      const returnToLogin = () => {
+        clearInterval(window.portalPresenceTimer);
+        clearInterval(portalMessageTimer);
+        portalMessageInitialized = false;
+        portalKnownMessageIds = new Set();
+        if (state.user) {
+          const presence = read('iqraPortalPresence2026', {});
+          delete presence[state.role === 'student' ? `student:${state.user.id}` : `admin:${state.user.username || 'portal'}`];
+          localStorage.setItem('iqraPortalPresence2026', JSON.stringify(presence));
+        }
+        localStorage.removeItem(SESSION);
+        state.role = '';
+        state.user = null;
+        state.view = 'dashboard';
+        state.query = '';
+        state.page = 1;
+        closeModal();
+        closeNav();
+        $('app').classList.add('hidden');
+        $('login').classList.remove('hidden');
+        $('login').classList.add('flex');
+        $('loginId').value = '';
+        $('loginPassword').value = '';
+        $('remember').checked = false;
+        $('loading')?.remove();
+        $('loadingScreen')?.classList.add('is-hidden');
+        setTimeout(() => $('loginId')?.focus(), 50);
+        notify('Returned to login');
+      };
+
+      document.querySelectorAll('[data-login-logo]').forEach(logo => {
+        logo.addEventListener('click', returnToLogin);
+      });
+      $('logoutBtn').onclick = () => {
+        if (confirm('Sign out of IQRA’ Portal?')) {
+          clearInterval(window.portalPresenceTimer);
+          localStorage.removeItem(SESSION);
+          location.reload();
+        }
+      };
+      $('themeBtn').onclick = $('topTheme').onclick = () => {
+        const next = document.documentElement.dataset.theme === 'light' ? '' : 'light';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem(THEME, next);
+      };
+      $('menuBtn').onclick = () => {
+        $('sidebar').classList.remove('-translate-x-full');
+        $('sidebar').classList.add('translate-x-0');
+        $('shade').classList.remove('hidden');
+      };
+      $('shade').onclick = closeNav;
+      $('modal').onclick = e => {
+        if (e.target === $('modal')) closeModal();
+      };
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+      });
+      document.documentElement.dataset.theme = localStorage.getItem(THEME) || '';
+      const customTheme = read('iqraPortalCustomTheme2026', null);
+      if (customTheme) {
+        if (customTheme.primary) document.documentElement.style.setProperty('--color-primary', customTheme.primary);
+        if (customTheme.bg) document.documentElement.style.setProperty('--color-bg', customTheme.bg);
+        if (customTheme.surface) document.documentElement.style.setProperty('--color-surface', customTheme.surface);
+        if (customTheme.text) document.documentElement.style.setProperty('--color-text', customTheme.text);
+      }
+      students = read(DATA, initial);
+      if (!students.some(student => student.id === 34)) {
+        students.push({
+          id: 34,
+          name: 'AFNAN',
+          score: 0,
+          attendance: 92,
+          photo: '',
+          portfolioLink: '',
+          password: '',
+          email: '',
+          firstLogin: true,
+          lastLogin: '',
+          history: []
+        });
+        save();
+      }
+      admins = read(ADMINS, [defaultAdmin]);
+      const legacyAdmin = admins.find(admin => admin.username.toLowerCase() === 'admin@iqra.com');
+      if (legacyAdmin) {
+        legacyAdmin.username = defaultAdmin.username;
+        legacyAdmin.password = defaultAdmin.password;
+      }
+      const savedDefaultAdmin = admins.find(admin => admin.username.toLowerCase() === defaultAdmin.username);
+      if (savedDefaultAdmin) {
+        savedDefaultAdmin.password = defaultAdmin.password;
+      } else {
+        admins.unshift(defaultAdmin);
+      }
+      const savedAdditionalAdmin = admins.find(admin => admin.username.toLowerCase() === additionalAdmin.username.toLowerCase());
+      if (savedAdditionalAdmin) {
+        savedAdditionalAdmin.password = additionalAdmin.password;
+      } else {
+        admins.push(additionalAdmin);
+      }
+      const savedThirdAdmin = admins.find(admin => admin.username.toLowerCase() === thirdAdmin.username.toLowerCase());
+      if (savedThirdAdmin) {
+        savedThirdAdmin.password = thirdAdmin.password;
+      } else {
+        admins.push(thirdAdmin);
+      }
+      admins = admins.filter((admin, index, list) => list.findIndex(item => item.username.toLowerCase() === admin.username.toLowerCase()) === index);
+      saveAdmins();
+      const syncStudents = async () => {
+        if (!window.iqraSupabase) return;
+        try {
+          const cloudStudents = await window.iqraSupabase.getStudents();
+          if (cloudStudents.length) {
+            students = cloudStudents.map(student => ({
+              id: student.id,
+              name: student.name,
+              score: student.score || 0,
+              attendance: student.attendance || 92,
+              photo: student.photo || '',
+              portfolioLink: student.portfolio_link || '',
+              password: student.password || '',
+              email: student.email || '',
+              firstLogin: student.first_login !== false,
+              lastLogin: student.last_login || '',
+              history: student.history || [],
+              show_online_status: student.show_online_status !== false
+            }));
+            localStorage.setItem(DATA, JSON.stringify(students));
+          } else {
+            await window.iqraSupabase.saveStudents(students);
+          }
+        } catch {
+          // Keep the local device data available when the SQL setup is pending.
+        }
+      };
+      syncStudents();
+      const session = read(SESSION, null);
+      setTimeout(() => {
+        $('loading')?.remove();
+        if (session?.role === 'admin') {
+          const admin = admins.find(a => a.username === session.username) || admins[0];
+          admin ? openApp('admin', admin) : ($('login').classList.remove('hidden'), $('login').classList.add('flex'));
+        }
+        else if (session?.role === 'student') {
+          const s = students.find(x => x.id === session.id);
+          s ? openApp('student', s) : ($('login').classList.remove('hidden'), $('login').classList.add('flex'));
+        } else {
+          $('login').classList.remove('hidden');
+          $('login').classList.add('flex');
+        }
+      }, 350);
+    })();
+
+  </script>
+  <div id="loadingScreen" aria-label="Loading IQRA Portal" role="status" class="is-hidden">
+    <div class="loading-shell">
+      <div class="loading-logo">IQ</div>
+      <p class="loading-eyebrow">IQRA’ PORTAL</p>
+      <h1>Preparing your workspace</h1>
+      <div class="loading-track" aria-hidden="true">
+        <div class="loading-progress"></div>
+      </div>
+      <p id="loadingMessage">Workspace ready</p>
+    </div>
+  </div>
+  <style>
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--color-primary) 28%, transparent), transparent 34rem), var(--color-bg);
+      color: var(--color-text);
+      transition: opacity .45s ease, visibility .45s ease;
+    }
+
+    #loadingScreen.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-shell {
+      width: min(90vw, 420px);
+      text-align: center;
+      animation: loadingLift .6s ease both;
+    }
+
+    .loading-logo {
+      display: grid;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 22px;
+      place-items: center;
+      border-radius: calc(var(--radius) * 1.2);
+      background: linear-gradient(135deg, var(--color-primary), #2563eb, #f97316);
+      color: var(--color-primary-contrast);
+      box-shadow: 0 18px 50px color-mix(in srgb, var(--color-primary) 35%, transparent);
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      animation: loadingPulse 1.8s ease-in-out infinite;
+    }
+
+    .loading-eyebrow {
+      margin: 0;
+      color: var(--color-primary);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .25em;
+    }
+
+    .loading-shell h1 {
+      margin: 10px 0 22px;
+      font-family: var(--font-heading);
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 700;
+    }
+
+    .loading-track {
+      height: 6px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--color-text) 12%, transparent);
+    }
+
+    .loading-progress {
+      width: 40%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--color-primary), #2563eb, #f97316);
+      animation: loadingProgress 1.2s ease-in-out infinite;
+    }
+
+    #loadingMessage {
+      margin-top: 14px;
+      color: var(--color-muted);
+      font-size: .82rem;
+    }
+
+    @keyframes loadingProgress {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(350%); }
+    }
+
+    @keyframes loadingPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    @keyframes loadingLift {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <script>
+    window.addEventListener('load', () => {
+      const screen = document.getElementById('loadingScreen');
+      const message = document.getElementById('loadingMessage');
+      if (!screen) return;
+      setTimeout(() => {
+        if (message) message.textContent = 'Workspace ready';
+        setTimeout(() => screen.classList.add('is-hidden'), 280);
+      }, 700);
+    });
+  </script>
+
+
+
+
+
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"e3c1c9af36de41759418005494a48906","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body></html>
